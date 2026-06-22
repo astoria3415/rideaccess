@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(find \"C:/Users/astor/.claude/skills/stripe-checkout-integration\" -type f | sort; echo \"---\"; wc -l \"C:/Users/astor/.claude/skills/stripe-checkout-integration/SKILL.md\" \"C:/Users/astor/.claude/skills/stripe-checkout-integration/references/\"*.md)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://lhqitwatdvzrzonfteuu.supabase.co/auth/v1/health\" --max-time 10)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/\" -H \"apikey: sb_publishable_NFJzaufxTbJQE3nURYlfKA_wbiCPdx4\" --max-time 10)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/bookings?select=id&limit=1\" -H \"apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" --max-time 10)",
+      "Bash(curl -s \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/bookings?select=id&limit=1\" -H \"apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" --max-time 10)",
+      "Bash(curl -s -w \"\\\\n[%{http_code}]\\\\n\" \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/testimonials?select=name&limit=2\" -H \"apikey: sb_publishable_NFJzaufxTbJQE3nURYlfKA_wbiCPdx4\" --max-time 10)",
+      "Bash(curl -s -w \"\\\\n[%{http_code}]\\\\n\" \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/testimonials?select=name&limit=2\" -H \"apikey: sb_publishable_NFJzaufxTbJQE3nURYlfKA_wbiCPdx4\" -H \"Authorization: Bearer sb_publishable_NFJzaufxTbJQE3nURYlfKA_wbiCPdx4\" --max-time 10)",
+      "Bash(curl -s -w '\\\\n[%{http_code}]\\\\n' -X POST http://localhost:3000/api/bookings -H 'Content-Type: application/json' -d '{ *)",
+      "Bash(curl -s \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/bookings?id=eq.2734ceca-115d-4f40-ba51-768a101d33bd&select=passenger_name,service_type,booking_status,payment_status,wheelchair_required\" -H \"apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" --max-time 10)",
+      "Bash(curl -s \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/leads?reference_id=eq.2734ceca-115d-4f40-ba51-768a101d33bd&select=name,source,status\" -H \"apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" --max-time 10)",
+      "Bash(echo \"== delete lead ==\")",
+      "Bash(curl -s -w '[%{http_code}]\\\\n' -X DELETE https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/leads?reference_id=eq.2734ceca-115d-4f40-ba51-768a101d33bd -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Prefer: return=representation' --max-time 10)",
+      "Bash(echo \"== delete booking ==\")",
+      "Bash(curl -s -w '[%{http_code}]\\\\n' -X DELETE https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/bookings?id=eq.2734ceca-115d-4f40-ba51-768a101d33bd -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Prefer: return=representation' --max-time 10)",
+      "Bash(curl -s https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/bookings?select=id -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' --max-time 10)",
+      "Bash(curl -s https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/leads?select=id -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' --max-time 10)",
+      "Bash(curl -s -w '\\\\n[%{http_code}]\\\\n' -X POST http://localhost:3000/api/checkout -H 'Content-Type: application/json' -d '{ *)",
+      "Bash(curl -s \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/payments?select=amount_cents,currency,status,description,email,stripe_checkout_session&order=created_at.desc&limit=3\" -H \"apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" --max-time 10)",
+      "Bash(curl -s -w \"[%{http_code}]\\\\n\" -X DELETE \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/payments?email=eq.stripe@example.com\" -H \"apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Prefer: return=representation\" --max-time 10 -o /dev/null)",
+      "Bash(curl -s \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/payments?select=id\" -H \"apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" --max-time 10)",
+      "Bash(taskkill //F //IM stripe.exe)",
+      "Bash(curl -s -w '\\\\n[%{http_code}]\\\\n' -X POST https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/admins -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{\"id\":\"1da21ff3-943f-4bd4-9fea-03a05566a8c3\",\"email\":\"astoria3415@gmail.com\",\"full_name\":\"Site Administrator\",\"role\":\"superadmin\"}' --max-time 15)",
+      "Bash(curl -s -w '\\\\n[%{http_code}]\\\\n' -X POST https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/invoices -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{ *)"
+    ]
+  }
+}
