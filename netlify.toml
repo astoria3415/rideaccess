@@ -1,0 +1,13 @@
+# Netlify configuration for the Ride Access NYC Next.js app.
+# Netlify auto-installs the official Next.js runtime (@netlify/plugin-nextjs),
+# which handles SSR, API routes, and middleware.
+
+[build]
+  command = "next build"
+
+[build.environment]
+  # Next.js 15.5 requires Node 18.18+. Pin a modern LTS for consistency.
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
