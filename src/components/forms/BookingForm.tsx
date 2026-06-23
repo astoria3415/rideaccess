@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { CheckCircle2, Loader2, AlertCircle, Lock } from "lucide-react";
 import { bookingSchema, type BookingInput } from "@/lib/validations";
 import { services } from "@/lib/data/services";
 import { AddressAutocomplete } from "./AddressAutocomplete";
@@ -26,6 +26,12 @@ export function BookingForm() {
 
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [serverError, setServerError] = useState("");
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [bookingEmail, setBookingEmail] = useState("");
+  const [depositLoading, setDepositLoading] = useState(false);
+  const [depositError, setDepositError] = useState("");
+
+  const DEPOSIT_CENTS = 1000; // $10 booking deposit
 
   async function onSubmit(values: BookingInput) {
     setStatus("idle");
@@ -36,15 +42,44 @@ export function BookingForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
         throw new Error(data.error ?? "Something went wrong.");
       }
+      setBookingId(data.id ?? null);
+      setBookingEmail(values.email);
       setStatus("success");
       reset();
     } catch (err) {
       setStatus("error");
       setServerError(err instanceof Error ? err.message : "Please try again.");
+    }
+  }
+
+  async function payDeposit() {
+    setDepositError("");
+    setDepositLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: DEPOSIT_CENTS,
+          description: "Booking deposit — Ride Access NYC",
+          email: bookingEmail,
+          bookingId: bookingId ?? undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error ?? "Could not start payment.");
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      setDepositError(
+        err instanceof Error ? err.message : "Please try again.",
+      );
+      setDepositLoading(false);
     }
   }
 
@@ -57,9 +92,43 @@ export function BookingForm() {
           Thank you. Our team will confirm your ride by phone and email shortly.
           A confirmation has been sent to your inbox.
         </p>
+
+        <div className="mt-6 w-full max-w-md rounded-2xl border border-primary-100 bg-primary-50/60 p-5">
+          <p className="font-semibold text-primary">
+            Reserve your ride with a $10 deposit
+          </p>
+          <p className="mt-1 text-sm text-slate-600">
+            Securing a small refundable deposit lets us lock in your driver and
+            time. The $10 is applied toward your fare.
+          </p>
+          <button
+            type="button"
+            onClick={payDeposit}
+            disabled={depositLoading}
+            className="btn-primary mt-4 w-full"
+          >
+            {depositLoading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> Redirecting…
+              </>
+            ) : (
+              <>
+                <Lock className="h-5 w-5" aria-hidden /> Pay $10 Deposit
+              </>
+            )}
+          </button>
+          {depositError && (
+            <p className="mt-2 text-sm text-red-600">{depositError}</p>
+          )}
+          <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-slate-500">
+            <Lock className="h-3.5 w-3.5" aria-hidden /> Secured by Stripe · Card,
+            Apple Pay, Google Pay &amp; Link
+          </p>
+        </div>
+
         <button
           type="button"
-          className="btn-outline mt-6"
+          className="btn-outline mt-4"
           onClick={() => setStatus("idle")}
         >
           Book Another Ride
