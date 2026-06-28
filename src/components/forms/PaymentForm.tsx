@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Loader2, Lock, AlertCircle } from "lucide-react";
 
 const PRESETS = [
-  { label: "Booking Deposit", amount: 2500 },
+  { label: "Booking Deposit", amount: 5000 },
   { label: "Standard Ride", amount: 6500 },
   { label: "Round Trip", amount: 12000 },
 ];

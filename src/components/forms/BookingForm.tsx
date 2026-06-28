@@ -31,7 +31,7 @@ export function BookingForm() {
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositError, setDepositError] = useState("");
 
-  const DEPOSIT_CENTS = 2500; // $25 booking deposit
+  const DEPOSIT_CENTS = 5000; // $50 booking deposit
 
   async function onSubmit(values: BookingInput) {
     setStatus("idle");
@@ -95,11 +95,11 @@ export function BookingForm() {
 
         <div className="mt-6 w-full max-w-md rounded-2xl border border-primary-100 bg-primary-50/60 p-5">
           <p className="font-semibold text-primary">
-            Reserve your ride with a $25 deposit
+            Reserve your ride with a $50 deposit
           </p>
           <p className="mt-1 text-sm text-slate-600">
             Securing a small refundable deposit lets us lock in your driver and
-            time. The $25 is applied toward your fare.
+            time. The $50 is applied toward your fare.
           </p>
           <button
             type="button"
@@ -113,7 +113,7 @@ export function BookingForm() {
               </>
             ) : (
               <>
-                <Lock className="h-5 w-5" aria-hidden /> Pay $25 Deposit
+                <Lock className="h-5 w-5" aria-hidden /> Pay $50 Deposit
               </>
             )}
           </button>
