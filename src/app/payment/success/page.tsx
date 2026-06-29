@@ -3,6 +3,12 @@ import { CheckCircle2, Home, CalendarCheck } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import { getStripe } from "@/lib/stripe";
 import { formatCurrency } from "@/lib/utils";
+// 1. IMPORT YOUR RESEND CONFIG / FUNCTION HERE
+// Replace this with your actual Resend utility file path if needed
+import { resend } from "@/lib/email"; 
+
+// 2. FORCE DYNAMIC RUNTIME so Vercel doesn't cache this page and skip the email logic
+export const dynamic = "force-dynamic";
 
 export const metadata = buildMetadata({
   title: "Payment Successful",
@@ -29,6 +35,26 @@ export default async function PaymentSuccessPage({
   const session = await getSession(session_id);
   const amount = session?.amount_total ?? null;
   const email = session?.customer_details?.email ?? null;
+  const customerName = session?.customer_details?.name ?? "Valued Customer";
+
+  // 3. TRIGGER RESEND IMMEDIATELY IF A VALID SESSION IS FOUND
+  if (session && email) {
+    try {
+      await resend.emails.send({
+        from: "Ride Access NYC <booking@rideaccessnyc.com>",
+        to: [email, "astoria3415@gmail.com"], // Sends copy to customer and to your Gmail
+        subject: "Ride Booking Confirmation - Ride Access NYC",
+        html: `
+          <h1>Booking Confirmed!</h1>
+          <p>Thank you for choosing Ride Access NYC, ${customerName}.</p>
+          <p>Your payment of <strong>${amount ? formatCurrency(amount) : "your fare"}</strong> has been successfully processed.</p>
+          <p>Our team will contact you shortly with vehicle details and your driver assignments.</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Resend execution error on success page:", emailError);
+    }
+  }
 
   return (
     <section className="container-page flex min-h-[60vh] flex-col items-center justify-center py-24 text-center">

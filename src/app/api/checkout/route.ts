@@ -31,9 +31,11 @@ export async function POST(req: Request) {
 
   try {
     const stripe = getStripe();
+    
+    // Creating the Checkout Session without hardcoded payment methods 
+    // lets Stripe handle Apple Pay, Google Pay, and Link automatically.
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card", "link"],
       customer_email: email,
       line_items: [
         {
@@ -48,7 +50,10 @@ export async function POST(req: Request) {
           },
         },
       ],
-      metadata: { bookingId: bookingId ?? "", description },
+      metadata: { 
+        bookingId: bookingId ?? "", 
+        description: description ?? "" 
+      },
       automatic_tax: { enabled: false },
       success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/payment/cancelled`,

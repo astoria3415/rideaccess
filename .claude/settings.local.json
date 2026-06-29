@@ -26,7 +26,11 @@
       "Bash(curl -s \"https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/payments?select=id\" -H \"apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" -H \"Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF\" --max-time 10)",
       "Bash(taskkill //F //IM stripe.exe)",
       "Bash(curl -s -w '\\\\n[%{http_code}]\\\\n' -X POST https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/admins -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{\"id\":\"1da21ff3-943f-4bd4-9fea-03a05566a8c3\",\"email\":\"astoria3415@gmail.com\",\"full_name\":\"Site Administrator\",\"role\":\"superadmin\"}' --max-time 15)",
-      "Bash(curl -s -w '\\\\n[%{http_code}]\\\\n' -X POST https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/invoices -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{ *)"
+      "Bash(curl -s -w '\\\\n[%{http_code}]\\\\n' -X POST https://lhqitwatdvzrzonfteuu.supabase.co/rest/v1/invoices -H 'apikey: sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Authorization: Bearer sb_secret_huZkm-ez_sShSnYgTdrPjw_Eiyz3AnF' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{ *)",
+      "PowerShell(cd \"C:\\\\Users\\\\astor\\\\OneDrive\\\\Desktop\\\\samadclaude\"; git rebase --abort; Write-Output \"abort exit: $LASTEXITCODE\"; Write-Output \"=== status ===\"; git status; Write-Output \"=== log ===\"; git log --oneline -5; Write-Output \"=== branch tracking ===\"; git branch -vv)",
+      "Bash(npm run *)",
+      "Bash(echo \"BUILD EXIT CODE: $?\")",
+      "Read(//tmp/**)"
     ]
   }
 }

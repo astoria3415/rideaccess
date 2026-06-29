@@ -4,6 +4,7 @@
 
 [build]
   command = "next build"
+  functions = "netlify/functions"
 
 [build.environment]
   # Next.js 15.5 requires Node 18.18+. Pin a modern LTS for consistency.

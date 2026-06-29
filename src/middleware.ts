@@ -20,17 +20,24 @@ type CookieToSet = { name: string; value: string; options?: CookieOptions };
  *     redirecting unauthenticated users to the login screen.
  */
 export async function middleware(request: NextRequest) {
-  const adminHost = process.env.NEXT_PUBLIC_ADMIN_HOST?.trim();
-  const host = request.headers.get("host") ?? "";
-  const isAdminHost = !!adminHost && host === adminHost;
   const { pathname } = request.nextUrl;
 
-  // Leave API routes and Next internals untouched by the subdomain rewrite.
+  // 1. Check for API routes and Next internals first.
   const isPassthrough =
     pathname.startsWith("/api") || pathname.startsWith("/_next");
 
+  // 2. IMMEDIATELY exit and let API requests proceed untouched.
+  // This ensures booking emails fire smoothly without auth interference.
+  if (isPassthrough) {
+    return NextResponse.next();
+  }
+
+  const adminHost = process.env.NEXT_PUBLIC_ADMIN_HOST?.trim();
+  const host = request.headers.get("host") ?? "";
+  const isAdminHost = !!adminHost && host === adminHost;
+
   // --- Redirect /admin off the public domain to the admin subdomain. ---
-  if (adminHost && !isAdminHost && !isPassthrough && pathname.startsWith("/admin")) {
+  if (adminHost && !isAdminHost && pathname.startsWith("/admin")) {
     const url = request.nextUrl.clone();
     url.host = adminHost;
     url.port = "";
@@ -41,7 +48,7 @@ export async function middleware(request: NextRequest) {
   // --- On the admin host, map root-level paths into the /admin section. ---
   let adminPath = pathname; // the effective admin-relative path for auth checks
   let rewriteUrl: URL | null = null;
-  if (isAdminHost && !isPassthrough && !pathname.startsWith("/admin")) {
+  if (isAdminHost && !pathname.startsWith("/admin")) {
     adminPath = pathname === "/" ? "/admin" : `/admin${pathname}`;
     rewriteUrl = request.nextUrl.clone();
     rewriteUrl.pathname = adminPath;

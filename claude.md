@@ -950,7 +950,23 @@ No placeholders.
 No mock implementations.
 
 No TODO comments.
+Project: RideAccessNYC
+
+Stack:
+- Next.js
+- TypeScript
+- Supabase
+- Stripe
+- Tailwind
+
+Rules:
+- Do not explain basic concepts
+- Modify only requested files
+- Use existing components
+- Keep responses short
+- Check existing code before creating new files
 
 Generate production-ready code only.
+
 
 

@@ -5,17 +5,27 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPaymentReceipt } from "@/lib/email";
 
 export const runtime = "nodejs";
-// Stripe needs the raw body for signature verification.
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature");
-  const secret = process.env.WEBHOOK_SECRET;
+  // Updated variable name to match standard Netlify configurations
+  const secret = process.env.STRIPE_WEBHOOK_SECRET; 
 
-  if (!sig || !secret) {
+  // Added console.error logs so guard clauses don't exit silently
+  if (!sig) {
+    console.error("[webhook error] Missing stripe-signature header.");
+    return NextResponse.json(
+      { error: "Stripe signature missing." },
+      { status: 400 }
+    );
+  }
+
+  if (!secret) {
+    console.error("[webhook error] STRIPE_WEBHOOK_SECRET environment variable is missing on Netlify.");
     return NextResponse.json(
       { error: "Webhook not configured." },
-      { status: 400 },
+      { status: 500 } // Changing to 500 since this is a server configuration issue
     );
   }
 
@@ -26,10 +36,11 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, secret);
   } catch (err) {
-    console.error("[webhook] signature verification failed", err);
+    console.error("[webhook error] Signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
   }
 
+  console.log(`[webhook success] Verified event received: ${event.type}`);
   const supabase = createAdminClient();
 
   switch (event.type) {
@@ -40,18 +51,18 @@ export async function POST(req: Request) {
       const email = session.customer_details?.email ?? session.customer_email;
       const description = session.metadata?.description ?? "Transportation payment";
 
-      // Idempotency: if we've already recorded this session, stop here
-      // so Stripe retries don't create duplicate payments/invoices.
+      // Idempotency check
       const { data: existing } = await supabase
         .from("payments")
         .select("id")
         .eq("stripe_checkout_session", session.id)
         .maybeSingle();
       if (existing) {
+        console.log(`[webhook] Duplicate event skipped for session: ${session.id}`);
         return NextResponse.json({ received: true, duplicate: true });
       }
 
-      const { data: payment } = await supabase
+      const { data: payment, error: paymentErr } = await supabase
         .from("payments")
         .insert({
           booking_id: bookingId,
@@ -69,6 +80,10 @@ export async function POST(req: Request) {
         .select("id")
         .single();
 
+      if (paymentErr) {
+        console.error("[webhook error] Failed to insert payment:", paymentErr);
+      }
+
       if (bookingId) {
         await supabase
           .from("bookings")
@@ -76,7 +91,7 @@ export async function POST(req: Request) {
           .eq("id", bookingId);
       }
 
-      // Auto-generate a paid invoice for this transaction.
+      // Auto-generate a paid invoice
       await supabase.from("invoices").insert({
         booking_id: bookingId,
         payment_id: payment?.id ?? null,
@@ -92,11 +107,17 @@ export async function POST(req: Request) {
       });
 
       if (email) {
-        await sendPaymentReceipt({
-          email,
-          amountCents: amount,
-          description,
-        });
+        try {
+          console.log(`[webhook] Attempting to send receipt email to: ${email}`);
+          await sendPaymentReceipt({
+            email,
+            amountCents: amount,
+            description,
+          });
+          console.log("[webhook] Receipt email sent successfully.");
+        } catch (emailErr) {
+          console.error("[webhook error] Failed to send receipt email:", emailErr);
+        }
       }
       break;
     }
@@ -118,7 +139,7 @@ export async function POST(req: Request) {
     }
 
     default:
-      // Unhandled event types are acknowledged so Stripe stops retrying.
+      console.log(`[webhook] Unhandled event type acknowledged: ${event.type}`);
       break;
   }
 
