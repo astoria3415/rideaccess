@@ -3,11 +3,9 @@ import { CheckCircle2, Home, CalendarCheck } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import { getStripe } from "@/lib/stripe";
 import { formatCurrency } from "@/lib/utils";
-// 1. IMPORT YOUR RESEND CONFIG / FUNCTION HERE
-// Replace this with your actual Resend utility file path if needed
-import { resend } from "@/lib/email"; 
+// 1. Import the official Resend class directly
+import { Resend } from "resend"; 
 
-// 2. FORCE DYNAMIC RUNTIME so Vercel doesn't cache this page and skip the email logic
 export const dynamic = "force-dynamic";
 
 export const metadata = buildMetadata({
@@ -37,12 +35,15 @@ export default async function PaymentSuccessPage({
   const email = session?.customer_details?.email ?? null;
   const customerName = session?.customer_details?.name ?? "Valued Customer";
 
-  // 3. TRIGGER RESEND IMMEDIATELY IF A VALID SESSION IS FOUND
+  // 2. Trigger the email if a valid session exists
   if (session && email) {
     try {
+      // Initialize right here using your Vercel Environment Variable
+      const resend = new Resend(process.env.RESEND_API_KEY);
+
       await resend.emails.send({
         from: "Ride Access NYC <booking@rideaccessnyc.com>",
-        to: [email, "astoria3415@gmail.com"], // Sends copy to customer and to your Gmail
+        to: [email, "astoria3415@gmail.com"],
         subject: "Ride Booking Confirmation - Ride Access NYC",
         html: `
           <h1>Booking Confirmed!</h1>
