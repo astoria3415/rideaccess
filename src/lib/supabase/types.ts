@@ -30,6 +30,8 @@ export type LeadSource =
 
 export type Booking = {
   id: string;
+  booking_number: string;
+  user_id: string | null;
   passenger_name: string;
   phone: string;
   email: string;

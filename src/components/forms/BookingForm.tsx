@@ -8,6 +8,7 @@ import { bookingSchema, type BookingInput } from "@/lib/validations";
 import { services } from "@/lib/data/services";
 import { site } from "@/lib/site";
 import { AddressAutocomplete } from "./AddressAutocomplete";
+import { BookingAccount, type AccountUser } from "./BookingAccount";
 
 export function BookingForm() {
   const {
@@ -27,6 +28,13 @@ export function BookingForm() {
 
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [serverError, setServerError] = useState("");
+  const [confirmationNumber, setConfirmationNumber] = useState("");
+  const [user, setUser] = useState<AccountUser | null>(null);
+
+  function handleUser(u: AccountUser | null) {
+    setUser(u);
+    if (u) setValue("email", u.email);
+  }
 
   async function onSubmit(values: BookingInput) {
     setStatus("idle");
@@ -41,6 +49,7 @@ export function BookingForm() {
       if (!res.ok) {
         throw new Error(data.error ?? "Something went wrong.");
       }
+      setConfirmationNumber(data.bookingNumber ?? "");
       setStatus("success");
       reset();
     } catch (err) {
@@ -59,6 +68,12 @@ export function BookingForm() {
           send your personalized quote and confirm your ride by phone and email
           shortly.
         </p>
+
+        {confirmationNumber && (
+          <p className="mt-4 rounded-xl bg-slate-100 px-5 py-3 text-sm font-semibold text-primary">
+            Confirmation #{confirmationNumber}
+          </p>
+        )}
 
         <div className="mt-6 w-full max-w-md rounded-2xl border border-primary-100 bg-primary-50/60 p-5">
           <p className="font-semibold text-primary">Need your ride sooner?</p>
@@ -83,7 +98,9 @@ export function BookingForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="card space-y-5" noValidate>
+    <div>
+      <BookingAccount user={user} onUser={handleUser} />
+      <form onSubmit={handleSubmit(onSubmit)} className="card space-y-5" noValidate>
       {/* Honeypot */}
       <input
         type="text"
@@ -104,7 +121,13 @@ export function BookingForm() {
       </div>
 
       <Field label="Email" error={errors.email?.message} required>
-        <input className="field" type="email" autoComplete="email" {...register("email")} />
+        <input
+          className="field"
+          type="email"
+          autoComplete="email"
+          readOnly={!!user}
+          {...register("email")}
+        />
       </Field>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -187,7 +210,8 @@ export function BookingForm() {
         By submitting you agree to be contacted about your transportation
         request. We never share your information.
       </p>
-    </form>
+      </form>
+    </div>
   );
 }
 

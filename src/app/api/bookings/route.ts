@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { bookingSchema } from "@/lib/validations";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { sendBookingConfirmation } from "@/lib/email";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
@@ -35,11 +36,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  // Attach the signed-in customer if there is a session (guest → null).
+  const session = await createClient();
+  const {
+    data: { user },
+  } = await session.auth.getUser();
+
   const supabase = createAdminClient();
 
   const { data: booking, error } = await supabase
     .from("bookings")
     .insert({
+      user_id: user?.id ?? null,
       passenger_name: data.passengerName,
       phone: data.phone,
       email: data.email,
@@ -54,7 +62,7 @@ export async function POST(req: Request) {
       booking_status: "pending",
       payment_status: "unpaid",
     })
-    .select("id")
+    .select("id, booking_number")
     .single();
 
   if (error || !booking) {
@@ -84,8 +92,12 @@ export async function POST(req: Request) {
     rideTime: data.rideTime,
     serviceType: data.serviceType,
     wheelchairRequired: data.wheelchairRequired,
-    bookingId: booking.id,
+    bookingNumber: booking.booking_number,
   });
 
-  return NextResponse.json({ ok: true, id: booking.id });
+  return NextResponse.json({
+    ok: true,
+    id: booking.id,
+    bookingNumber: booking.booking_number,
+  });
 }

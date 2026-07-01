@@ -39,7 +39,7 @@ interface BookingEmailData {
   rideTime: string;
   serviceType: string;
   wheelchairRequired: boolean;
-  bookingId: string;
+  bookingNumber: string;
 }
 
 export async function sendBookingConfirmation(data: BookingEmailData) {
@@ -57,7 +57,7 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
       <tr><td style="padding:6px 0;color:#64748b">Wheelchair</td><td style="padding:6px 0;text-align:right;font-weight:600">${data.wheelchairRequired ? "Yes" : "No"}</td></tr>
     </table>
     <p>Need to make a change? Call us at <strong>${site.phone}</strong>.</p>
-    <p style="color:#94a3b8;font-size:12px">Confirmation #${data.bookingId}</p>`;
+    <p style="margin-top:8px;font-size:15px"><strong>Confirmation #${data.bookingNumber}</strong></p>`;
 
   try {
     await Promise.all([
