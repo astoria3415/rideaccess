@@ -3,9 +3,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { CheckCircle2, Loader2, AlertCircle, Lock } from "lucide-react";
+import { CheckCircle2, Loader2, AlertCircle, Phone } from "lucide-react";
 import { bookingSchema, type BookingInput } from "@/lib/validations";
 import { services } from "@/lib/data/services";
+import { site } from "@/lib/site";
 import { AddressAutocomplete } from "./AddressAutocomplete";
 
 export function BookingForm() {
@@ -26,12 +27,6 @@ export function BookingForm() {
 
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [serverError, setServerError] = useState("");
-  const [bookingId, setBookingId] = useState<string | null>(null);
-  const [bookingEmail, setBookingEmail] = useState("");
-  const [depositLoading, setDepositLoading] = useState(false);
-  const [depositError, setDepositError] = useState("");
-
-  const DEPOSIT_CENTS = 5000; // $50 booking deposit
 
   async function onSubmit(values: BookingInput) {
     setStatus("idle");
@@ -46,8 +41,6 @@ export function BookingForm() {
       if (!res.ok) {
         throw new Error(data.error ?? "Something went wrong.");
       }
-      setBookingId(data.id ?? null);
-      setBookingEmail(values.email);
       setStatus("success");
       reset();
     } catch (err) {
@@ -56,74 +49,26 @@ export function BookingForm() {
     }
   }
 
-  async function payDeposit() {
-    setDepositError("");
-    setDepositLoading(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: DEPOSIT_CENTS,
-          description: "Booking deposit — Ride Access NYC",
-          email: bookingEmail,
-          bookingId: bookingId ?? undefined,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        throw new Error(data.error ?? "Could not start payment.");
-      }
-      window.location.href = data.url;
-    } catch (err) {
-      setDepositError(
-        err instanceof Error ? err.message : "Please try again.",
-      );
-      setDepositLoading(false);
-    }
-  }
-
   if (status === "success") {
     return (
       <div className="card flex flex-col items-center py-12 text-center">
         <CheckCircle2 className="h-14 w-14 text-success" aria-hidden />
-        <h3 className="mt-4 text-2xl font-bold">Booking Request Received!</h3>
+        <h3 className="mt-4 text-2xl font-bold">Quote Request Received!</h3>
         <p className="mt-2 max-w-md text-slate-600">
-          Thank you. Our team will confirm your ride by phone and email shortly.
-          A confirmation has been sent to your inbox.
+          Thank you. We&apos;ve emailed you a confirmation and our team will
+          send your personalized quote and confirm your ride by phone and email
+          shortly.
         </p>
 
         <div className="mt-6 w-full max-w-md rounded-2xl border border-primary-100 bg-primary-50/60 p-5">
-          <p className="font-semibold text-primary">
-            Reserve your ride with a $50 deposit
-          </p>
+          <p className="font-semibold text-primary">Need your ride sooner?</p>
           <p className="mt-1 text-sm text-slate-600">
-            Securing a small refundable deposit lets us lock in your driver and
-            time. The $50 is applied toward your fare.
+            Call us directly and we&apos;ll arrange your transportation right
+            away.
           </p>
-          <button
-            type="button"
-            onClick={payDeposit}
-            disabled={depositLoading}
-            className="btn-primary mt-4 w-full"
-          >
-            {depositLoading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> Redirecting…
-              </>
-            ) : (
-              <>
-                <Lock className="h-5 w-5" aria-hidden /> Pay $50 Deposit
-              </>
-            )}
-          </button>
-          {depositError && (
-            <p className="mt-2 text-sm text-red-600">{depositError}</p>
-          )}
-          <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-slate-500">
-            <Lock className="h-3.5 w-3.5" aria-hidden /> Secured by Stripe · Card,
-            Apple Pay, Google Pay &amp; Link
-          </p>
+          <a href={`tel:${site.phone}`} className="btn-primary mt-4 w-full">
+            <Phone className="h-5 w-5" aria-hidden /> Call {site.phone}
+          </a>
         </div>
 
         <button
