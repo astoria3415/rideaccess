@@ -44,7 +44,8 @@
       "PowerShell(Stop-Process -Id 26456 -Force -ErrorAction Continue)",
       "PowerShell(Stop-Process -Id 7516 -Force -ErrorAction Continue)",
       "PowerShell(Get-Process -Id 26456,7516 -ErrorAction SilentlyContinue)",
-      "Bash(ls .next/dev/ 2>/dev/null; rm -f .next/dev/lock* .next/dev/*.json 2>/dev/null; ls .next/dev/ 2>/dev/null)"
+      "Bash(ls .next/dev/ 2>/dev/null; rm -f .next/dev/lock* .next/dev/*.json 2>/dev/null; ls .next/dev/ 2>/dev/null)",
+      "Bash(git fetch *)"
     ]
   }
 }

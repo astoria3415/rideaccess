@@ -44,6 +44,7 @@ export async function POST(req: Request) {
 
   const supabase = createAdminClient();
 
+  // Save booking details safely to the database
   const { data: booking, error } = await supabase
     .from("bookings")
     .insert({
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
       round_trip: data.roundTrip,
       notes: data.notes || null,
       booking_status: "pending",
-      payment_status: "unpaid",
+      payment_status: "unpaid", // Remains unpaid since deposit page is bypassed
     })
     .select("id, booking_number")
     .single();
@@ -73,7 +74,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Unified lead pipeline (best-effort).
+  // Unified lead pipeline for your backend tracking
   await supabase.from("leads").insert({
     name: data.passengerName,
     email: data.email,
@@ -83,22 +84,29 @@ export async function POST(req: Request) {
     reference_id: booking.id,
   });
 
-  await sendBookingConfirmation({
-    passengerName: data.passengerName,
-    email: data.email,
-    pickupAddress: data.pickupAddress,
-    destinationAddress: data.destinationAddress,
-    rideDate: data.rideDate,
-    rideTime: data.rideTime,
-    serviceType: data.serviceType,
-    wheelchairRequired: data.wheelchairRequired,
-    bookingNumber: booking.booking_number,
-    bookingId: booking.id,
-  });
+  // Fires the updated email template via Resend library
+  try {
+    await sendBookingConfirmation({
+      passengerName: data.passengerName,
+      email: data.email,
+      pickupAddress: data.pickupAddress,
+      destinationAddress: data.destinationAddress,
+      rideDate: data.rideDate,
+      rideTime: data.rideTime,
+      serviceType: data.serviceType,
+      wheelchairRequired: data.wheelchairRequired,
+      bookingNumber: booking.booking_number,
+      bookingId: booking.id,
+    });
+  } catch (emailError) {
+    // Log the error but don't crash the user response if email delivery lags
+    console.error("[email] distribution failed", emailError);
+  }
 
   return NextResponse.json({
     ok: true,
     id: booking.id,
     bookingNumber: booking.booking_number,
+    isGuest: !user,
   });
 }
