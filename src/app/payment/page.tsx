@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ShieldCheck, CreditCard, Receipt } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { PaymentForm } from "@/components/forms/PaymentForm";
@@ -19,7 +20,9 @@ export default function PaymentPage() {
         breadcrumbs={[{ name: "Payment", href: "/payment" }]}
       />
       <section className="container-page grid gap-10 py-16 lg:grid-cols-[1fr_20rem]">
-        <PaymentForm />
+        <Suspense fallback={<div className="card h-96 animate-pulse" />}>
+          <PaymentForm />
+        </Suspense>
         <aside className="space-y-4">
           {[
             { icon: ShieldCheck, t: "PCI-compliant", d: "Card data never touches our servers." },

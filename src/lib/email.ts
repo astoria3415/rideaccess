@@ -40,6 +40,7 @@ interface BookingEmailData {
   serviceType: string;
   wheelchairRequired: boolean;
   bookingNumber: string;
+  bookingId: string;
 }
 
 export async function sendBookingConfirmation(data: BookingEmailData) {
@@ -59,13 +60,23 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
     <p>Need to make a change? Call us at <strong>${site.phone}</strong>.</p>
     <p style="margin-top:8px;font-size:15px"><strong>Confirmation #${data.bookingNumber}</strong></p>`;
 
+  const payUrl = `${site.url}/payment?booking=${data.bookingId}&ref=${encodeURIComponent(data.bookingNumber)}&email=${encodeURIComponent(data.email)}`;
+  const qrUrl = `${site.url}/api/qr?data=${encodeURIComponent(payUrl)}`;
+
+  const customerExtras = `
+    <div style="text-align:center;margin:24px 0 8px">
+      <a href="${payUrl}" style="display:inline-block;background:#0F4C81;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:10px">Pay Securely Online</a>
+      <p style="color:#64748b;font-size:13px;margin:14px 0 6px">Or scan to pay from your phone:</p>
+      <img src="${qrUrl}" alt="QR code for booking ${data.bookingNumber} payment page" width="150" height="150" style="border:1px solid #e2e8f0;border-radius:10px"/>
+    </div>`;
+
   try {
     await Promise.all([
       resend.emails.send({
         from: FROM,
         to: data.email,
-        subject: `Your Ride Access NYC booking — ${data.rideDate}`,
-        html: wrap("Booking Received", details),
+        subject: `Your Ride Access NYC booking ${data.bookingNumber} — ${data.rideDate}`,
+        html: wrap("Booking Received", details + customerExtras),
       }),
       resend.emails.send({
         from: FROM,

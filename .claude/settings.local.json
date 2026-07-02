@@ -30,7 +30,21 @@
       "PowerShell(cd \"C:\\\\Users\\\\astor\\\\OneDrive\\\\Desktop\\\\samadclaude\"; git rebase --abort; Write-Output \"abort exit: $LASTEXITCODE\"; Write-Output \"=== status ===\"; git status; Write-Output \"=== log ===\"; git log --oneline -5; Write-Output \"=== branch tracking ===\"; git branch -vv)",
       "Bash(npm run *)",
       "Bash(echo \"BUILD EXIT CODE: $?\")",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'feat: replace booking deposit with Resend quote email flow *)",
+      "Bash(git push *)",
+      "Bash(nslookup rideaccessnyc.com)",
+      "Bash(nslookup www.rideaccessnyc.com)",
+      "Bash(curl -sI https://www.rideaccessnyc.com/book)",
+      "mcp__c5879502-195d-4f00-a2d5-83fca61e63aa__list_projects",
+      "Bash(git commit -m ' *)",
+      "Bash(git rebase *)",
+      "Bash(git stash *)",
+      "PowerShell(Stop-Process -Id 26456 -Force -ErrorAction Continue)",
+      "PowerShell(Stop-Process -Id 7516 -Force -ErrorAction Continue)",
+      "PowerShell(Get-Process -Id 26456,7516 -ErrorAction SilentlyContinue)",
+      "Bash(ls .next/dev/ 2>/dev/null; rm -f .next/dev/lock* .next/dev/*.json 2>/dev/null; ls .next/dev/ 2>/dev/null)"
     ]
   }
 }

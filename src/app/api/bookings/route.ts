@@ -93,6 +93,7 @@ export async function POST(req: Request) {
     serviceType: data.serviceType,
     wheelchairRequired: data.wheelchairRequired,
     bookingNumber: booking.booking_number,
+    bookingId: booking.id,
   });
 
   return NextResponse.json({

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2, Lock, AlertCircle } from "lucide-react";
 
 const PRESETS = [
@@ -10,8 +11,13 @@ const PRESETS = [
 ];
 
 export function PaymentForm() {
-  const [email, setEmail] = useState("");
-  const [description, setDescription] = useState("Transportation payment");
+  const params = useSearchParams();
+  const bookingId = params.get("booking");
+  const ref = params.get("ref");
+  const [email, setEmail] = useState(params.get("email") ?? "");
+  const [description, setDescription] = useState(
+    ref ? `Booking ${ref}` : "Transportation payment",
+  );
   const [amount, setAmount] = useState(6500);
   const [custom, setCustom] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,7 +41,12 @@ export function PaymentForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: cents, description, email }),
+        body: JSON.stringify({
+          amount: cents,
+          description,
+          email,
+          bookingId: bookingId ?? undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.url) {

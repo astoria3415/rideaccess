@@ -87,7 +87,11 @@ export async function POST(req: Request) {
       if (bookingId) {
         await supabase
           .from("bookings")
-          .update({ payment_status: "paid", amount_cents: amount })
+          .update({
+            payment_status: "paid",
+            booking_status: "confirmed",
+            amount_cents: amount,
+          })
           .eq("id", bookingId);
       }
 
