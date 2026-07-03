@@ -13,8 +13,19 @@ function getResend(): Resend | null {
   return new Resend(key);
 }
 
-const FROM = process.env.EMAIL_FROM ?? `${site.name} <onboarding@resend.dev>`;
-const ADMIN = process.env.ADMIN_NOTIFY_EMAIL ?? site.email;
+// Sender must be on the verified rideaccessnyc.com domain — the Resend
+// sandbox (onboarding@resend.dev) only delivers to the account owner, so
+// customers would never receive their confirmation. Env values are
+// quote-stripped because quoted values pasted into Vercel keep the quotes,
+// which Resend rejects as an invalid from format.
+const envFrom = (process.env.EMAIL_FROM ?? "").replace(/^["']|["']$/g, "").trim();
+const FROM =
+  envFrom && !envFrom.includes("resend.dev")
+    ? envFrom
+    : `${site.name} <booking@rideaccessnyc.com>`;
+const ADMIN =
+  (process.env.ADMIN_NOTIFY_EMAIL ?? "").replace(/^["']|["']$/g, "").trim() ||
+  site.email;
 
 const wrap = (heading: string, body: string) => `
   <div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0">
@@ -71,7 +82,9 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
     </div>`;
 
   try {
-    await Promise.all([
+    // The Resend SDK reports failures in the response instead of throwing,
+    // so check each result — otherwise a rejected send is invisible.
+    const [customer, admin] = await Promise.all([
       resend.emails.send({
         from: FROM,
         to: data.email,
@@ -85,6 +98,10 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
         html: wrap("New Booking Request", details),
       }),
     ]);
+    if (customer.error)
+      console.error("[email] customer confirmation rejected", customer.error);
+    if (admin.error)
+      console.error("[email] admin notification rejected", admin.error);
   } catch (err) {
     console.error("[email] booking confirmation failed", err);
   }
