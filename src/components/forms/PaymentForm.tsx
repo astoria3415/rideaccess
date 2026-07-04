@@ -18,8 +18,11 @@ export function PaymentForm() {
   const [description, setDescription] = useState(
     ref ? `Booking ${ref}` : "Transportation payment",
   );
+  const quoted = params.get("amount");
   const [amount, setAmount] = useState(6500);
-  const [custom, setCustom] = useState("");
+  const [custom, setCustom] = useState(
+    quoted && !isNaN(parseFloat(quoted)) ? parseFloat(quoted).toFixed(2) : "",
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 

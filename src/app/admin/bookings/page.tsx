@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { BookingStatusSelect } from "@/components/admin/BookingStatusSelect";
+import { SendPaymentRequest } from "@/components/admin/SendPaymentRequest";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,11 @@ export default async function AdminBookingsPage() {
                 <tr key={b.id} className="align-top">
                   <td className="p-4">
                     <p className="font-medium text-ink">{b.passenger_name}</p>
+                    {b.booking_number && (
+                      <p className="text-xs font-semibold text-primary">
+                        {b.booking_number}
+                      </p>
+                    )}
                     <p className="text-xs text-slate-500">{b.phone}</p>
                     <p className="text-xs text-slate-500">{b.email}</p>
                   </td>
@@ -71,6 +77,11 @@ export default async function AdminBookingsPage() {
                   </td>
                   <td className="p-4">
                     <StatusBadge status={b.payment_status} />
+                    {b.payment_status !== "paid" && (
+                      <div className="mt-2">
+                        <SendPaymentRequest bookingId={b.id} />
+                      </div>
+                    )}
                   </td>
                   <td className="p-4">
                     <BookingStatusSelect id={b.id} current={b.booking_status} />

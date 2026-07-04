@@ -107,6 +107,52 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
   }
 }
 
+/**
+ * Email the customer a quoted price with a Stripe pay link + QR code.
+ * Sent by an admin from the dashboard once a quote amount is decided.
+ */
+export async function sendPaymentRequest(data: {
+  passengerName: string;
+  email: string;
+  bookingId: string;
+  bookingNumber: string;
+  amountCents: number;
+}): Promise<{ sent: boolean; error?: string }> {
+  const resend = getResend();
+  if (!resend)
+    return { sent: false, error: "Email is not configured (RESEND_API_KEY missing)." };
+
+  const amount = money(data.amountCents);
+  const payUrl = `${site.url}/payment?booking=${data.bookingId}&ref=${encodeURIComponent(data.bookingNumber)}&email=${encodeURIComponent(data.email)}&amount=${(data.amountCents / 100).toFixed(2)}`;
+  const qrUrl = `${site.url}/api/qr?data=${encodeURIComponent(payUrl)}`;
+
+  const body = `
+    <p>Hi ${data.passengerName}, here is the quote for your ride
+    <strong>${data.bookingNumber}</strong>:</p>
+    <p style="font-size:28px;font-weight:700;color:#0F4C81;margin:16px 0">${amount}</p>
+    <p>You can pay securely online with card, Apple Pay, Google Pay or Link:</p>
+    <div style="text-align:center;margin:24px 0 8px">
+      <a href="${payUrl}" style="display:inline-block;background:#0F4C81;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:10px">Pay ${amount} Now</a>
+      <p style="color:#64748b;font-size:13px;margin:14px 0 6px">Or scan to pay from your phone:</p>
+      <img src="${qrUrl}" alt="QR code for booking ${data.bookingNumber} payment" width="150" height="150" style="border:1px solid #e2e8f0;border-radius:10px"/>
+    </div>
+    <p>Questions? Call us at <strong>${site.phone}</strong>.</p>`;
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM,
+      to: data.email,
+      subject: `Your quote for booking ${data.bookingNumber} — ${amount}`,
+      html: wrap("Your Ride Quote", body),
+    });
+    if (error) return { sent: false, error: error.message };
+    return { sent: true };
+  } catch (err) {
+    console.error("[email] payment request failed", err);
+    return { sent: false, error: err instanceof Error ? err.message : "Send failed." };
+  }
+}
+
 export async function sendContactNotification(data: {
   name: string;
   email: string;

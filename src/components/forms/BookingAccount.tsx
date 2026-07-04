@@ -58,7 +58,11 @@ export function BookingAccount({
         onUser({ id: data.user.id, email: data.user.email });
       }
     } else {
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/book` },
+      });
       if (error) {
         setError(error.message);
       } else if (data.session && data.user?.email) {
