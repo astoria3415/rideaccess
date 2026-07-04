@@ -45,7 +45,26 @@
       "PowerShell(Stop-Process -Id 7516 -Force -ErrorAction Continue)",
       "PowerShell(Get-Process -Id 26456,7516 -ErrorAction SilentlyContinue)",
       "Bash(ls .next/dev/ 2>/dev/null; rm -f .next/dev/lock* .next/dev/*.json 2>/dev/null; ls .next/dev/ 2>/dev/null)",
-      "Bash(git fetch *)"
+      "Bash(git fetch *)",
+      "Bash(node -e \"console.log\\(encodeURIComponent\\('https://www.rideaccessnyc.com/payment?booking=abc&ref=RA-10001'\\)\\)\")",
+      "Bash(curl -s -o /dev/null -m 20 -w 'prod-qr:%{http_code} type:%{content_type}\\\\n' https://www.rideaccessnyc.com/api/qr?data=__CMDSUB_OUTPUT__)",
+      "Bash(curl -s -o /dev/null -m 20 -w 'prod-home:%{http_code}\\\\n' \"https://www.rideaccessnyc.com/\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{try{const j=JSON.parse\\(d\\);const rows=\\(j.data??[]\\).map\\(x=>\\({to:x.to,from:x.from,subject:\\(x.subject||''\\).slice\\(0,60\\),status:x.last_event,at:x.created_at}\\)\\);console.log\\(JSON.stringify\\(rows,null,1\\)\\)}catch{console.log\\(d.slice\\(0,400\\)\\)}}\\)\")",
+      "Bash(curl -s -m 30 -X POST https://www.rideaccessnyc.com/api/bookings -H 'Content-Type: application/json' -d '{ *)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{try{const j=JSON.parse\\(d\\);console.log\\(JSON.stringify\\(\\(j.data??[]\\).map\\(x=>\\({to:x.to,from:x.from,subject:\\(x.subject||''\\).slice\\(0,70\\),status:x.last_event,at:x.created_at}\\)\\),null,1\\)\\)}catch{console.log\\(d.slice\\(0,400\\)\\)}}\\)\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\(JSON.stringify\\({to:j.to,from:j.from,status:j.last_event}\\)\\)}\\)\")",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{console.log\\(JSON.stringify\\(\\(JSON.parse\\(d\\).data??[]\\).map\\(x=>\\({to:x.to,from:x.from,subject:\\(x.subject||''\\).slice\\(0,70\\),status:x.last_event}\\)\\),null,1\\)\\)}\\)\")",
+      "PowerShell(npm run dev -- --port 3131)",
+      "Bash(curl -s -o /dev/null -m 5 http://localhost:3131/)",
+      "Bash(curl -s -o /dev/null -m 60 -w 'payment:%{http_code}\\\\n' \"http://localhost:3131/payment?booking=6f9619ff-8b86-4d01-b42d-00cf4fc964ff&ref=RA-10008&email=test%40example.com&amount=85.00\")",
+      "Bash(curl -s -o /dev/null -m 30 -w 'admin-api-noauth:%{http_code}\\\\n' -X POST http://localhost:3131/api/admin/payment-request -H \"Content-Type: application/json\" -d '{\"bookingId\":\"6f9619ff-8b86-4d01-b42d-00cf4fc964ff\",\"amountCents\":8500}')",
+      "Bash(curl -s -o /dev/null -m 60 -w 'payment:%{http_code}\\\\n' \"http://localhost:3100/payment?booking=6f9619ff-8b86-4d01-b42d-00cf4fc964ff&ref=RA-10008&email=test%40example.com&amount=85.00\")",
+      "Bash(curl -s -m 30 -w '\\\\nadmin-api-noauth:%{http_code}\\\\n' -X POST http://localhost:3100/api/admin/payment-request -H \"Content-Type: application/json\" -d '{\"bookingId\":\"6f9619ff-8b86-4d01-b42d-00cf4fc964ff\",\"amountCents\":8500}')",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>console.log\\(JSON.stringify\\(JSON.parse\\(d\\),null,1\\)\\)\\)\")",
+      "Bash(sed -i '30,32 s/^/# local CLI stack \\(disabled - app uses cloud project above\\)\\\\n# /' .env.local)",
+      "Bash(sed -i -E '/^NEXT_PUBLIC_SUPABASE_URL=http:\\\\/\\\\/127\\\\.0\\\\.0\\\\.1/s/^/#/' .env.local)",
+      "PowerShell(npm run build)"
     ]
   }
 }

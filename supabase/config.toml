@@ -1,0 +1,8 @@
+[db]
+port = 55422
+
+[api]
+port = 55421
+
+[studio]
+port = 55423
