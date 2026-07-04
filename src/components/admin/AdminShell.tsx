@@ -12,6 +12,7 @@ import {
   CreditCard,
   FileText,
   LogOut,
+  Settings,
   Accessibility,
   Menu,
   X,
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/admin/payments", label: "Payments", icon: CreditCard },
   { href: "/admin/invoices", label: "Invoices", icon: FileText },
   { href: "/admin/testimonials", label: "Testimonials", icon: Star },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminShell({
