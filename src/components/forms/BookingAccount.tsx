@@ -64,7 +64,11 @@ export function BookingAccount({
         options: { emailRedirectTo: `${window.location.origin}/book` },
       });
       if (error) {
-        setError(error.message);
+        setError(
+          /rate limit/i.test(error.message)
+            ? "Too many sign-up emails were sent in a short time. You can continue as a guest below — your booking will still go through."
+            : error.message,
+        );
       } else if (data.session && data.user?.email) {
         // Email confirmation disabled — user is signed in immediately.
         onUser({ id: data.user.id, email: data.user.email });

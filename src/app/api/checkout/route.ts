@@ -32,10 +32,12 @@ export async function POST(req: Request) {
   try {
     const stripe = getStripe();
     
-    // Creating the Checkout Session without hardcoded payment methods 
-    // lets Stripe handle Apple Pay, Google Pay, and Link automatically.
+    // Card only: this still enables Apple Pay / Google Pay wallets, but
+    // disables Stripe Link, which confused customers by asking them to
+    // verify a phone number saved in their Link profile (not our data).
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      payment_method_types: ["card"],
       customer_email: email,
       line_items: [
         {
