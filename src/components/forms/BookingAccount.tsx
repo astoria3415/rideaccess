@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, AlertCircle, UserRound, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { site } from "@/lib/site";
 
 export interface AccountUser {
   id: string;
@@ -61,7 +62,11 @@ export function BookingAccount({
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/book` },
+        // Always send confirmation links to the live domain — never
+        // localhost — so the link works on any device the customer opens
+        // their email on. In local dev this points at production, which is
+        // the correct behaviour for real customer emails.
+        options: { emailRedirectTo: `${site.url}/book` },
       });
       if (error) {
         setError(

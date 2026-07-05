@@ -58,18 +58,33 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
   const resend = getResend();
   if (!resend) return;
 
-  const details = `
-    <p>Hi ${data.passengerName}, your transportation request has been received.
-    Our team will confirm your ride shortly.</p>
+  const detailsTable = `
     <table style="width:100%;border-collapse:collapse;margin:16px 0">
+      <tr><td style="padding:6px 0;color:#64748b">Passenger</td><td style="padding:6px 0;text-align:right;font-weight:600">${data.passengerName}</td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Service</td><td style="padding:6px 0;text-align:right;font-weight:600">${data.serviceType}</td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Date</td><td style="padding:6px 0;text-align:right;font-weight:600">${data.rideDate} at ${data.rideTime}</td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Pickup</td><td style="padding:6px 0;text-align:right;font-weight:600">${data.pickupAddress}</td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Destination</td><td style="padding:6px 0;text-align:right;font-weight:600">${data.destinationAddress}</td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Wheelchair</td><td style="padding:6px 0;text-align:right;font-weight:600">${data.wheelchairRequired ? "Yes" : "No"}</td></tr>
-    </table>
-    <p>Need to make a change? Call us at <strong>${site.phone}</strong>.</p>
-    <p style="margin-top:8px;font-size:15px"><strong>Confirmation #${data.bookingNumber}</strong></p>`;
+    </table>`;
+
+  const confirmationLine = `<p style="margin-top:8px;font-size:15px"><strong>Confirmation #${data.bookingNumber}</strong></p>`;
+
+  // Customer-facing copy: warm thank-you + a request to verify the details.
+  const customerBody = `
+    <p>Thank you for traveling with <strong>${site.name}</strong>! Below please
+    find your confirmation. If any of the information appears to be incorrect,
+    please contact our office immediately at <strong>${site.phone}</strong> so
+    we can correct it.</p>
+    ${confirmationLine}
+    ${detailsTable}`;
+
+  // Admin-facing copy stays operational.
+  const adminBody = `
+    <p>A new booking request has been submitted.</p>
+    ${confirmationLine}
+    ${detailsTable}
+    <p style="color:#64748b">Reply-to reaches the passenger at ${data.email}.</p>`;
 
   const payUrl = `${site.url}/payment?booking=${data.bookingId}&ref=${encodeURIComponent(data.bookingNumber)}&email=${encodeURIComponent(data.email)}`;
   const qrUrl = `${site.url}/api/qr?data=${encodeURIComponent(payUrl)}`;
@@ -88,14 +103,16 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
       resend.emails.send({
         from: FROM,
         to: data.email,
+        replyTo: ADMIN,
         subject: `Your Ride Access NYC booking ${data.bookingNumber} — ${data.rideDate}`,
-        html: wrap("Booking Received", details + customerExtras),
+        html: wrap("Thank You for Your Booking", customerBody + customerExtras),
       }),
       resend.emails.send({
         from: FROM,
         to: ADMIN,
+        replyTo: data.email,
         subject: `New booking: ${data.passengerName} — ${data.rideDate}`,
-        html: wrap("New Booking Request", details),
+        html: wrap("New Booking Request", adminBody),
       }),
     ]);
     if (customer.error)
