@@ -41,6 +41,53 @@ const wrap = (heading: string, body: string) => `
     </div>
   </div>`;
 
+// Terms & Conditions / Reservation Agreement appended to the quote email so
+// the customer accepts them by paying. Kept as one styled block for reuse.
+const termsBlock = `
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid #e2e8f0;color:#475569;font-size:13px;line-height:1.55">
+    <h3 style="color:#0F4C81;font-size:15px;margin:0 0 6px">Terms &amp; Conditions / Reservation Agreement</h3>
+    <p style="margin:0 0 14px">Thank you for choosing ${site.name} for your medical and wheelchair-accessible transportation needs. We are committed to providing safe, professional, and timely service. By completing payment for this quote you agree to the terms below.</p>
+
+    <p style="font-weight:600;color:#0F4C81;margin:0 0 4px">Reservation Guidelines</p>
+    <p style="margin:0 0 4px">Please review your trip confirmation for accuracy and provide complete passenger details:</p>
+    <ul style="margin:0 0 14px;padding-left:18px">
+      <li>Accurate pickup / drop-off addresses</li>
+      <li>Number of passengers and mobility aids (e.g. wheelchairs)</li>
+      <li>Flight information (if applicable)</li>
+      <li>A contact mobile number for real-time communication</li>
+    </ul>
+
+    <p style="font-weight:600;color:#0F4C81;margin:0 0 4px">Airport Pickups</p>
+    <p style="margin:0 0 14px">For JFK, LGA, EWR, and other airports, please proceed directly outside the terminal exit to meet your driver. We monitor flight status to adjust for delays but appreciate timely updates from passengers when available.</p>
+
+    <p style="font-weight:600;color:#0F4C81;margin:0 0 4px">Payment Policy</p>
+    <ul style="margin:0 0 14px;padding-left:18px">
+      <li>All reservations must be prepaid in advance.</li>
+      <li>Drivers do not collect fares, except tips for excellent service (optional).</li>
+      <li>Quoted fares include mileage, wait time, and base toll estimates. Final charges may reflect actual tolls and extras (added stops, wait time, etc.).</li>
+    </ul>
+
+    <p style="font-weight:600;color:#0F4C81;margin:0 0 4px">Cancellation &amp; Refunds</p>
+    <p style="margin:0 0 4px">We understand plans change, so our cancellation policy is as follows:</p>
+    <ul style="margin:0 0 4px;padding-left:18px">
+      <li><strong>100% refund</strong> — if canceled at least 24 hours before pickup time</li>
+      <li><strong>50% refund</strong> — if canceled 2–3 hours before pickup</li>
+      <li><strong>No refund</strong> — if canceled after the driver has arrived on location</li>
+    </ul>
+    <p style="margin:0 0 14px">Refunds are processed within 5–7 business days.</p>
+
+    <p style="font-weight:600;color:#0F4C81;margin:0 0 4px">Important Policies</p>
+    <ul style="margin:0 0 14px;padding-left:18px">
+      <li>Last-minute bookings are non-refundable.</li>
+      <li>No-shows without communication will be fully charged.</li>
+      <li>Passengers are responsible for any damage caused during transport.</li>
+      <li>Vehicles must not exceed seating capacity. No smoking allowed. Pets must be declared in advance.</li>
+    </ul>
+
+    <p style="font-weight:600;color:#0F4C81;margin:0 0 4px">Contact Us — We're Here 24/7</p>
+    <p style="margin:0">We're proud to serve the NYC metro area with wheelchair-accessible and non-emergency medical transportation. Need help? Call <strong>${site.phone}</strong> or email <a href="mailto:${site.email}" style="color:#0097A7">${site.email}</a>.</p>
+  </div>`;
+
 interface BookingEmailData {
   passengerName: string;
   email: string;
@@ -153,12 +200,14 @@ export async function sendPaymentRequest(data: {
       <p style="color:#64748b;font-size:13px;margin:14px 0 6px">Or scan to pay from your phone:</p>
       <img src="${qrUrl}" alt="QR code for booking ${data.bookingNumber} payment" width="150" height="150" style="border:1px solid #e2e8f0;border-radius:10px"/>
     </div>
-    <p>Questions? Call us at <strong>${site.phone}</strong>.</p>`;
+    <p>Questions? Call us at <strong>${site.phone}</strong>.</p>
+    ${termsBlock}`;
 
   try {
     const { error } = await resend.emails.send({
       from: FROM,
       to: data.email,
+      replyTo: ADMIN,
       subject: `Your quote for booking ${data.bookingNumber} — ${amount}`,
       html: wrap("Your Ride Quote", body),
     });
