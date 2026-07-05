@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { DeleteButton } from "@/components/admin/DeleteButton";
+import { ClearOldData } from "@/components/admin/ClearOldData";
 
 export const dynamic = "force-dynamic";
 
@@ -23,11 +25,14 @@ export default async function AdminPaymentsPage() {
           <h1 className="text-2xl font-bold">Payments</h1>
           <p className="mt-1 text-slate-500">Stripe payment records.</p>
         </div>
-        <div className="card px-5 py-3">
-          <p className="text-xs uppercase text-slate-400">Total collected</p>
-          <p className="font-heading text-2xl font-bold text-primary">
-            {formatCurrency(total)}
-          </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <ClearOldData table="payments" />
+          <div className="card px-5 py-3">
+            <p className="text-xs uppercase text-slate-400">Total collected</p>
+            <p className="font-heading text-2xl font-bold text-primary">
+              {formatCurrency(total)}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -40,12 +45,13 @@ export default async function AdminPaymentsPage() {
               <th className="p-4">Amount</th>
               <th className="p-4">Status</th>
               <th className="p-4">Date</th>
+              <th className="p-4">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {!payments || payments.length === 0 ? (
               <tr>
-                <td colSpan={5} className="p-10 text-center text-slate-400">
+                <td colSpan={6} className="p-10 text-center text-slate-400">
                   No payments yet.
                 </td>
               </tr>
@@ -62,6 +68,9 @@ export default async function AdminPaymentsPage() {
                   </td>
                   <td className="p-4 text-xs text-slate-500">
                     {formatDateTime(p.created_at)}
+                  </td>
+                  <td className="p-4">
+                    <DeleteButton table="payments" id={p.id} label="payment" />
                   </td>
                 </tr>
               ))

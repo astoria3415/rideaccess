@@ -81,3 +81,91 @@ export async function setContactStatus(id: string, status: LeadStatus) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/contacts");
 }
+
+// ---- Delete actions ----
+
+const DELETABLE = {
+  bookings: "/admin/bookings",
+  leads: "/admin/leads",
+  contact_requests: "/admin/contacts",
+  payments: "/admin/payments",
+  testimonials: "/admin/testimonials",
+} as const;
+
+export type DeletableTable = keyof typeof DELETABLE;
+
+export async function deleteRow(table: DeletableTable, id: string) {
+  const path = DELETABLE[table];
+  if (!path) throw new Error("Table not allowed.");
+  const { supabase, user } = await requireAdmin();
+  const { error } = await supabase.from(table).delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  await supabase.from("audit_logs").insert({
+    actor: user.id,
+    action: "delete_row",
+    entity: table,
+    entity_id: id,
+    metadata: {},
+  });
+  revalidatePath(path);
+  revalidatePath("/admin");
+}
+
+export async function updateBooking(
+  id: string,
+  fields: {
+    passenger_name: string;
+    phone: string;
+    email: string;
+    pickup_address: string;
+    destination_address: string;
+    ride_date: string;
+    ride_time: string;
+    notes: string | null;
+  },
+) {
+  const { supabase, user } = await requireAdmin();
+  const { error } = await supabase.from("bookings").update(fields).eq("id", id);
+  if (error) throw new Error(error.message);
+
+  await supabase.from("audit_logs").insert({
+    actor: user.id,
+    action: "update_booking",
+    entity: "bookings",
+    entity_id: id,
+    metadata: fields,
+  });
+  revalidatePath("/admin/bookings");
+  revalidatePath("/admin");
+}
+
+export async function clearOldRows(table: DeletableTable, days: number) {
+  const path = DELETABLE[table];
+  if (!path || table === "testimonials") throw new Error("Table not allowed.");
+  if (![30, 60, 90].includes(days)) throw new Error("Invalid retention window.");
+  const { supabase, user } = await requireAdmin();
+
+  const cutoff = new Date(Date.now() - days * 86_400_000).toISOString();
+  let query = supabase
+    .from(table)
+    .delete({ count: "exact" })
+    .lt("created_at", cutoff);
+  // Never remove bookings that are still active or unpaid business records.
+  if (table === "bookings") {
+    query = query.in("booking_status", ["completed", "cancelled"]);
+  }
+  const { error, count } = await query;
+  if (error) throw new Error(error.message);
+
+  await supabase.from("audit_logs").insert({
+    actor: user.id,
+    action: "clear_old_rows",
+    entity: table,
+    entity_id: null,
+    metadata: { days, deleted: count ?? 0 },
+  });
+  revalidatePath(path);
+  revalidatePath("/admin");
+  return count ?? 0;
+}

@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { DeleteButton } from "@/components/admin/DeleteButton";
+import { ClearOldData } from "@/components/admin/ClearOldData";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +15,15 @@ export default async function AdminContactsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Contact Requests</h1>
-      <p className="mt-1 text-slate-500">Messages submitted via the website.</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Contact Requests</h1>
+          <p className="mt-1 text-slate-500">
+            Messages submitted via the website.
+          </p>
+        </div>
+        <ClearOldData table="contact_requests" />
+      </div>
 
       <div className="mt-6 grid gap-4">
         {!contacts || contacts.length === 0 ? (
@@ -36,6 +45,11 @@ export default async function AdminContactsPage() {
                   <span className="text-xs text-slate-400">
                     {formatDateTime(c.created_at)}
                   </span>
+                  <DeleteButton
+                    table="contact_requests"
+                    id={c.id}
+                    label="contact request"
+                  />
                 </div>
               </div>
               <p className="mt-3 rounded-xl bg-surface p-4 text-sm leading-relaxed text-slate-700">

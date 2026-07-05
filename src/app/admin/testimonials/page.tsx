@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { TestimonialToggle } from "@/components/admin/TestimonialToggle";
+import { DeleteButton } from "@/components/admin/DeleteButton";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,14 @@ export default async function AdminTestimonialsPage() {
                     />
                   ))}
                 </div>
-                <TestimonialToggle id={t.id} published={t.published} />
+                <div className="flex items-center gap-1">
+                  <TestimonialToggle id={t.id} published={t.published} />
+                  <DeleteButton
+                    table="testimonials"
+                    id={t.id}
+                    label="testimonial"
+                  />
+                </div>
               </div>
               <p className="mt-3 text-sm leading-relaxed text-slate-700">
                 “{t.quote}”
