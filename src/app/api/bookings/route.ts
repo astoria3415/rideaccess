@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { sendBookingConfirmation } from "@/lib/email";
 import { sendSMS } from "@/lib/sms";
+import { sendPushToAdmins } from "@/lib/push";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
@@ -130,6 +131,17 @@ export async function POST(req: Request) {
     );
   } catch (smsError) {
     console.error("[sms] admin sms failed", smsError);
+  }
+
+  // Push to admin devices (owner + partner)
+  try {
+    await sendPushToAdmins({
+      title: `New booking ${booking.booking_number}`,
+      body: `${data.passengerName} · ${data.pickupAddress} → ${data.destinationAddress}`,
+      url: "/admin/bookings",
+    });
+  } catch (pushError) {
+    console.error("[push] admin push failed", pushError);
   }
 
   return NextResponse.json({

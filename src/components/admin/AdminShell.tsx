@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { ServiceWorkerRegister } from "@/components/admin/ServiceWorkerRegister";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -52,6 +53,7 @@ export function AdminShell({
 
   return (
     <div className="flex min-h-screen bg-surface">
+      <ServiceWorkerRegister />
       {/* Sidebar */}
       <aside
         className={cn(

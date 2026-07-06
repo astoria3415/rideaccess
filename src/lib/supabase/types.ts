@@ -190,6 +190,15 @@ export type Database = {
         metadata: Record<string, unknown> | null;
         created_at: string;
       }>;
+      push_subscriptions: TableDef<{
+        id: string;
+        admin_id: string;
+        endpoint: string;
+        p256dh: string;
+        auth: string;
+        user_agent: string | null;
+        created_at: string;
+      }>;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

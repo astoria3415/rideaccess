@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { AccessDenied } from "@/components/admin/AccessDenied";
@@ -6,6 +6,24 @@ import { AccessDenied } from "@/components/admin/AccessDenied";
 export const metadata: Metadata = {
   title: "Admin Dashboard",
   robots: { index: false, follow: false },
+  // Admin-scoped PWA: manifest + apple-touch icon are linked here only, so
+  // the public marketing site is never installable.
+  manifest: "/api/admin/webmanifest",
+  // Icons served from the unguarded /api tree so they always resolve when the
+  // browser installs the app to the home screen.
+  icons: {
+    icon: "/api/admin/pwa-icon/192",
+    apple: "/api/admin/pwa-icon/180",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "RA Admin",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0F4C81",
 };
 
 export default async function AdminLayout({

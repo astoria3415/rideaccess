@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validations";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendContactNotification } from "@/lib/email";
+import { sendPushToAdmins } from "@/lib/push";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
@@ -63,6 +64,17 @@ export async function POST(req: Request) {
   });
 
   await sendContactNotification(data);
+
+  // Push to admin devices (owner + partner)
+  try {
+    await sendPushToAdmins({
+      title: "New contact request",
+      body: `${data.name} — ${data.subject}`,
+      url: "/admin/contacts",
+    });
+  } catch (pushError) {
+    console.error("[push] admin push failed", pushError);
+  }
 
   return NextResponse.json({ ok: true });
 }

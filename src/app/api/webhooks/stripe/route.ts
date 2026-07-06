@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPaymentReceipt } from "@/lib/email";
+import { sendPushToAdmins } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -122,6 +123,17 @@ export async function POST(req: Request) {
         } catch (emailErr) {
           console.error("[webhook error] Failed to send receipt email:", emailErr);
         }
+      }
+
+      // Push to admin devices (owner + partner)
+      try {
+        await sendPushToAdmins({
+          title: "Payment received",
+          body: `$${(amount / 100).toFixed(2)} — ${description}`,
+          url: "/admin/payments",
+        });
+      } catch (pushErr) {
+        console.error("[webhook error] admin push failed:", pushErr);
       }
       break;
     }
