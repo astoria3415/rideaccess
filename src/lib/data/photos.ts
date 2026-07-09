@@ -39,6 +39,18 @@ export const photos = {
     alt: "Wheelchair passenger boarding a Ride Access NYC accessible van via the ramp",
   },
 
+  /** Services page — private trips for disabled students. */
+  students: [
+    {
+      src: "/photos/student1.png",
+      alt: "Ride Access NYC driver assisting a student in a wheelchair into an accessible van in New York City",
+    },
+    {
+      src: "/photos/student2.png",
+      alt: "Ride Access NYC branded van with rear ramp deployed as a driver helps a smiling student in a wheelchair board",
+    },
+  ],
+
   /** Trust gallery — a small grid that humanizes the service. */
   gallery: [
     {
