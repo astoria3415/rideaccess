@@ -23,11 +23,36 @@ function ResetPasswordForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [ready, setReady] = useState(false);
 
+  // Recovery links arrive either as a PKCE `?code=` param (which must be
+  // exchanged for a session) or as a token hash in the URL fragment that the
+  // client auto-detects. Establish the session before allowing a reset.
   useEffect(() => {
-    if (!code) {
+    const supabase = createClient();
+
+    async function establishSession() {
+      // Already have a recovery session (fragment auto-detected)?
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        setReady(true);
+        return;
+      }
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          setError("This reset link is invalid or has expired. Request a new one.");
+          return;
+        }
+        setReady(true);
+        return;
+      }
+
       setError("No reset code provided. Check your email link.");
     }
+
+    establishSession();
   }, [code]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -129,7 +154,7 @@ function ResetPasswordForm() {
             </p>
           )}
 
-          <button type="submit" disabled={loading || !code} className="btn-primary w-full">
+          <button type="submit" disabled={loading || !ready} className="btn-primary w-full">
             {loading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> Resetting…
