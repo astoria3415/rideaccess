@@ -102,6 +102,14 @@ function LoginForm() {
             )}
           </button>
         </form>
+        <div className="mt-4 text-center">
+          <a
+            href="/admin/forgot-password"
+            className="text-sm text-primary hover:underline"
+          >
+            Forgot your password?
+          </a>
+        </div>
         <p className="mt-4 text-center text-xs text-slate-400">
           Authorized personnel only. Access is logged.
         </p>
