@@ -72,7 +72,11 @@ export default async function proxy(request: NextRequest) {
   }
 
   // --- 6. Admin auth guards ---
-  if (isAdminArea && !isLogin && !user) {
+  const isPasswordRecovery =
+    adminPath === "/admin/forgot-password" ||
+    adminPath === "/admin/reset-password";
+
+  if (isAdminArea && !isLogin && !isPasswordRecovery && !user) {
     const url = request.nextUrl.clone();
     url.pathname = isAdminHost ? "/login" : "/admin/login";
     url.searchParams.set("redirect", pathname);
