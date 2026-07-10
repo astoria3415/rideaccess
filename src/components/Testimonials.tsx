@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Star, Quote } from "lucide-react";
 import { testimonials } from "@/lib/data/testimonials";
 import { Reveal } from "./Reveal";
@@ -24,11 +25,20 @@ export function Testimonials() {
                 />
               ))}
             </div>
-            <figcaption className="mt-4 border-t border-slate-100 pt-4">
-              <p className="font-semibold text-primary">{t.name}</p>
-              <p className="text-sm text-slate-500">
-                {t.role} · {t.location}
-              </p>
+            <figcaption className="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4">
+              <Image
+                src={t.image}
+                alt={`${t.name}, Ride Access NYC passenger`}
+                width={56}
+                height={56}
+                className="h-14 w-14 flex-none rounded-full object-cover ring-2 ring-accent/20"
+              />
+              <div>
+                <p className="font-semibold text-primary">{t.name}</p>
+                <p className="text-sm text-slate-500">
+                  {t.role} · {t.location}
+                </p>
+              </div>
             </figcaption>
           </figure>
         </Reveal>
