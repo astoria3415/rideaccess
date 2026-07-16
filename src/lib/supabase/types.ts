@@ -148,6 +148,73 @@ export type Invoice = {
   created_at: string;
 }
 
+// ------------------------------------------------------------------
+// AccessRide Books (double-entry accounting)
+// ------------------------------------------------------------------
+
+export type LedgerAccountType =
+  | "asset"
+  | "liability"
+  | "equity"
+  | "income"
+  | "expense";
+
+export type LedgerAccount = {
+  id: string;
+  code: string;
+  name: string;
+  type: LedgerAccountType;
+  subtype: string | null;
+  description: string | null;
+  tax_line: string | null;
+  is_system: boolean;
+  is_archived: boolean;
+  created_at: string;
+};
+
+export type JournalEntry = {
+  id: string;
+  entry_number: number;
+  entry_date: string;
+  memo: string | null;
+  source_type: string;
+  source_id: string | null;
+  created_by: string | null;
+  created_at: string;
+};
+
+export type JournalLine = {
+  id: string;
+  entry_id: string;
+  account_id: string;
+  debit_cents: number;
+  credit_cents: number;
+  description: string | null;
+};
+
+export type Vendor = {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  notes: string | null;
+  is_1099: boolean;
+  created_at: string;
+};
+
+export type Expense = {
+  id: string;
+  vendor_id: string | null;
+  expense_date: string;
+  amount_cents: number;
+  description: string | null;
+  category_account_id: string | null;
+  payment_account_id: string | null;
+  receipt_url: string | null;
+  journal_entry_id: string | null;
+  created_at: string;
+};
+
 // A homomorphic mapped type produces a fresh object type with an
 // implicit index signature, so it satisfies Supabase's GenericTable
 // constraint (`Row extends Record<string, unknown>`) where a bare
@@ -172,6 +239,11 @@ export type Database = {
       testimonials: TableDef<Testimonial>;
       blog_posts: TableDef<BlogPost>;
       invoices: TableDef<Invoice>;
+      ledger_accounts: TableDef<LedgerAccount>;
+      journal_entries: TableDef<JournalEntry>;
+      journal_lines: TableDef<JournalLine>;
+      vendors: TableDef<Vendor>;
+      expenses: TableDef<Expense>;
       // Operational tables read/written via the service-role client or
       // admin session. Typed loosely so admin tooling stays ergonomic.
       admins: TableDef<{
@@ -201,7 +273,23 @@ export type Database = {
       }>;
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      post_journal_entry: {
+        Args: {
+          p_entry_date: string;
+          p_memo: string | null;
+          p_lines: {
+            account_id: string;
+            debit_cents: number;
+            credit_cents: number;
+            description?: string | null;
+          }[];
+          p_source_type?: string;
+          p_source_id?: string | null;
+        };
+        Returns: string;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

@@ -11,6 +11,7 @@ import {
   Star,
   CreditCard,
   FileText,
+  BookOpen,
   LogOut,
   Settings,
   Accessibility,
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/admin/contacts", label: "Contact Requests", icon: MessageSquare },
   { href: "/admin/payments", label: "Payments", icon: CreditCard },
   { href: "/admin/invoices", label: "Invoices", icon: FileText },
+  { href: "/admin/books", label: "Books", icon: BookOpen },
   { href: "/admin/testimonials", label: "Testimonials", icon: Star },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
