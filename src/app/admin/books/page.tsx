@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowDownRight,
   ArrowUpRight,
+  FileText,
   Landmark,
   Plus,
   Scale,
@@ -85,6 +86,22 @@ export default async function BooksOverview() {
   }
   const cash = accountBalance("asset", cashDebits, cashCredits);
 
+  // Accounts receivable: what customers still owe on issued invoices.
+  const arIds = new Set(
+    accounts
+      .filter((a) => a.type === "asset" && a.subtype === "receivable")
+      .map((a) => a.id),
+  );
+  let arDebits = 0;
+  let arCredits = 0;
+  for (const l of lines) {
+    if (arIds.has(l.account_id)) {
+      arDebits += l.debit_cents;
+      arCredits += l.credit_cents;
+    }
+  }
+  const receivable = accountBalance("asset", arDebits, arCredits);
+
   const cards = [
     {
       label: "Income (this month)",
@@ -110,11 +127,17 @@ export default async function BooksOverview() {
       icon: Landmark,
       tone: "text-secondary bg-cyan-50",
     },
+    {
+      label: "Accounts receivable",
+      value: formatMoney(receivable),
+      icon: FileText,
+      tone: "text-amber-600 bg-amber-50",
+    },
   ];
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {cards.map((card) => (
           <div
             key={card.label}

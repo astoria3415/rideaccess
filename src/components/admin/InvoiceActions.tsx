@@ -2,11 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Download, Mail, Trash2, Loader2 } from "lucide-react";
+import { Download, Mail, Trash2, Loader2, Link2 } from "lucide-react";
 import {
   emailInvoice,
   setInvoiceStatus,
   deleteInvoice,
+  createInvoicePaymentLink,
 } from "@/app/admin/invoices/actions";
 import type { InvoiceStatus } from "@/lib/supabase/types";
 
@@ -24,7 +25,27 @@ export function InvoiceActions({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [emailing, setEmailing] = useState(false);
+  const [linking, setLinking] = useState(false);
   const [toast, setToast] = useState<{ ok: boolean; msg: string } | null>(null);
+
+  async function onPaymentLink() {
+    setLinking(true);
+    setToast(null);
+    const res = await createInvoicePaymentLink(id);
+    if (res.ok) {
+      try {
+        await navigator.clipboard.writeText(res.url);
+        setToast({ ok: true, msg: "Payment link copied to clipboard." });
+      } catch {
+        window.open(res.url, "_blank", "noopener,noreferrer");
+        setToast({ ok: true, msg: "Payment link opened in a new tab." });
+      }
+    } else {
+      setToast({ ok: false, msg: res.message });
+    }
+    setLinking(false);
+    setTimeout(() => setToast(null), 6000);
+  }
 
   async function onEmail() {
     setEmailing(true);
@@ -55,6 +76,20 @@ export function InvoiceActions({
       >
         {emailing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
         Email
+      </button>
+
+      <button
+        onClick={onPaymentLink}
+        disabled={linking || status === "paid"}
+        title={
+          status === "paid"
+            ? "Invoice is already paid"
+            : "Create a Stripe payment link and copy it"
+        }
+        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-ink hover:border-secondary hover:text-primary disabled:opacity-50"
+      >
+        {linking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
+        Pay link
       </button>
 
       <select

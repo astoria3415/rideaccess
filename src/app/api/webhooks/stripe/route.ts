@@ -4,6 +4,7 @@ import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPaymentReceipt } from "@/lib/email";
 import { sendPushToAdmins } from "@/lib/push";
+import { postDirectPayment, postInvoicePaid } from "@/lib/books/posting";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const bookingId = session.metadata?.bookingId || null;
+      const invoiceId = session.metadata?.invoiceId || null;
       const amount = session.amount_total ?? 0;
       const email = session.customer_details?.email ?? session.customer_email;
       const description = session.metadata?.description ?? "Transportation payment";
@@ -96,20 +98,46 @@ export async function POST(req: Request) {
           .eq("id", bookingId);
       }
 
-      // Auto-generate a paid invoice
-      await supabase.from("invoices").insert({
-        booking_id: bookingId,
-        payment_id: payment?.id ?? null,
-        customer_name: session.customer_details?.name ?? "Customer",
-        customer_email: email,
-        line_items: [
-          { description, quantity: 1, unit_cents: amount },
-        ],
-        subtotal_cents: amount,
-        tax_cents: 0,
-        total_cents: amount,
-        status: "paid",
-      });
+      if (invoiceId) {
+        // Payment link for an existing invoice: settle it and post the
+        // settlement to the general ledger (idempotent on retries).
+        await supabase
+          .from("invoices")
+          .update({ status: "paid", payment_id: payment?.id ?? null })
+          .eq("id", invoiceId);
+        const { data: invoice } = await supabase
+          .from("invoices")
+          .select("*")
+          .eq("id", invoiceId)
+          .single();
+        if (invoice) {
+          await postInvoicePaid(supabase, invoice);
+        }
+      } else {
+        // Direct checkout with no invoice cycle: auto-generate a paid
+        // invoice as the customer's receipt document, and book the
+        // money straight to checking + revenue.
+        await supabase.from("invoices").insert({
+          booking_id: bookingId,
+          payment_id: payment?.id ?? null,
+          customer_name: session.customer_details?.name ?? "Customer",
+          customer_email: email,
+          line_items: [
+            { description, quantity: 1, unit_cents: amount },
+          ],
+          subtotal_cents: amount,
+          tax_cents: 0,
+          total_cents: amount,
+          status: "paid",
+        });
+        if (payment?.id) {
+          await postDirectPayment(supabase, {
+            id: payment.id,
+            amount_cents: amount,
+            description,
+          });
+        }
+      }
 
       if (email) {
         try {
