@@ -215,6 +215,25 @@ export type Expense = {
   created_at: string;
 };
 
+export type BankTransactionStatus =
+  | "unmatched"
+  | "matched"
+  | "categorized"
+  | "excluded";
+
+export type BankTransaction = {
+  id: string;
+  account_id: string;
+  txn_date: string;
+  description: string;
+  amount_cents: number;
+  fingerprint: string;
+  status: BankTransactionStatus;
+  journal_entry_id: string | null;
+  import_batch: string;
+  created_at: string;
+};
+
 // A homomorphic mapped type produces a fresh object type with an
 // implicit index signature, so it satisfies Supabase's GenericTable
 // constraint (`Row extends Record<string, unknown>`) where a bare
@@ -244,6 +263,7 @@ export type Database = {
       journal_lines: TableDef<JournalLine>;
       vendors: TableDef<Vendor>;
       expenses: TableDef<Expense>;
+      bank_transactions: TableDef<BankTransaction>;
       // Operational tables read/written via the service-role client or
       // admin session. Typed loosely so admin tooling stays ergonomic.
       admins: TableDef<{

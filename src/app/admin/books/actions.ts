@@ -224,6 +224,174 @@ export async function createExpense(input: {
   return { ok: true };
 }
 
+export async function importBankTransactions(input: {
+  account_id: string;
+  rows: {
+    txn_date: string;
+    description: string;
+    amount_cents: number;
+    fingerprint: string;
+  }[];
+}): Promise<
+  { ok: true; inserted: number; duplicates: number } | { ok: false; error: string }
+> {
+  const { supabase, user } = await requireAdmin();
+
+  if (!input.account_id) return { ok: false, error: "Pick a bank account." };
+  const rows = input.rows.filter(
+    (r) =>
+      DATE_RE.test(r.txn_date) &&
+      Number.isInteger(r.amount_cents) &&
+      r.amount_cents !== 0 &&
+      r.fingerprint,
+  );
+  if (rows.length === 0) return { ok: false, error: "Nothing to import." };
+  if (rows.length > 2000) {
+    return { ok: false, error: "That file is too large — import at most 2,000 rows at a time." };
+  }
+
+  const batch = crypto.randomUUID();
+  const { data, error } = await supabase
+    .from("bank_transactions")
+    .upsert(
+      rows.map((r) => ({
+        account_id: input.account_id,
+        txn_date: r.txn_date,
+        description: r.description.slice(0, 500),
+        amount_cents: r.amount_cents,
+        fingerprint: r.fingerprint,
+        import_batch: batch,
+      })),
+      { onConflict: "account_id,fingerprint", ignoreDuplicates: true },
+    )
+    .select("id");
+  if (error) return { ok: false, error: error.message };
+
+  const inserted = data?.length ?? 0;
+  await supabase.from("audit_logs").insert({
+    actor: user.id,
+    action: "import_bank_transactions",
+    entity: "bank_transactions",
+    entity_id: batch,
+    metadata: { inserted, submitted: rows.length },
+  });
+
+  revalidatePath("/admin/books/banking");
+  return { ok: true, inserted, duplicates: rows.length - inserted };
+}
+
+export async function categorizeBankTransaction(
+  txnId: string,
+  categoryAccountId: string,
+): Promise<SimpleResult> {
+  const { supabase, user } = await requireAdmin();
+  if (!categoryAccountId) return { ok: false, error: "Pick a category." };
+
+  const { data: txn, error: txnError } = await supabase
+    .from("bank_transactions")
+    .select("*")
+    .eq("id", txnId)
+    .single();
+  if (txnError || !txn) return { ok: false, error: "Transaction not found." };
+  if (txn.status !== "unmatched") {
+    return { ok: false, error: "This transaction is already handled." };
+  }
+  if (categoryAccountId === txn.account_id) {
+    return { ok: false, error: "Category must differ from the bank account." };
+  }
+
+  const amount = Math.abs(txn.amount_cents);
+  // Money out: debit the category (expense), credit the bank account.
+  // Money in: debit the bank account, credit the category (income).
+  const lines =
+    txn.amount_cents < 0
+      ? [
+          { account_id: categoryAccountId, debit_cents: amount, credit_cents: 0, description: txn.description },
+          { account_id: txn.account_id, debit_cents: 0, credit_cents: amount, description: txn.description },
+        ]
+      : [
+          { account_id: txn.account_id, debit_cents: amount, credit_cents: 0, description: txn.description },
+          { account_id: categoryAccountId, debit_cents: 0, credit_cents: amount, description: txn.description },
+        ];
+
+  const { data: entryId, error: postError } = await supabase.rpc(
+    "post_journal_entry",
+    {
+      p_entry_date: txn.txn_date,
+      p_memo: txn.description,
+      p_lines: lines,
+      p_source_type: "bank_import",
+      p_source_id: txn.id,
+    },
+  );
+  if (postError) return { ok: false, error: postError.message };
+
+  await supabase
+    .from("bank_transactions")
+    .update({ status: "categorized", journal_entry_id: entryId })
+    .eq("id", txn.id);
+
+  await supabase.from("audit_logs").insert({
+    actor: user.id,
+    action: "categorize_bank_transaction",
+    entity: "bank_transactions",
+    entity_id: txn.id,
+    metadata: { category_account_id: categoryAccountId, amount_cents: txn.amount_cents },
+  });
+
+  revalidatePath("/admin/books");
+  revalidatePath("/admin/books/banking");
+  revalidatePath("/admin/books/journal");
+  revalidatePath("/admin/books/accounts");
+  return { ok: true };
+}
+
+export async function matchBankTransaction(
+  txnId: string,
+  journalEntryId: string,
+): Promise<SimpleResult> {
+  const { supabase, user } = await requireAdmin();
+
+  const { data: txn } = await supabase
+    .from("bank_transactions")
+    .select("id, status")
+    .eq("id", txnId)
+    .single();
+  if (!txn) return { ok: false, error: "Transaction not found." };
+  if (txn.status !== "unmatched") {
+    return { ok: false, error: "This transaction is already handled." };
+  }
+
+  const { error } = await supabase
+    .from("bank_transactions")
+    .update({ status: "matched", journal_entry_id: journalEntryId })
+    .eq("id", txnId);
+  if (error) return { ok: false, error: error.message };
+
+  await supabase.from("audit_logs").insert({
+    actor: user.id,
+    action: "match_bank_transaction",
+    entity: "bank_transactions",
+    entity_id: txnId,
+    metadata: { journal_entry_id: journalEntryId },
+  });
+
+  revalidatePath("/admin/books/banking");
+  return { ok: true };
+}
+
+export async function excludeBankTransaction(txnId: string): Promise<SimpleResult> {
+  const { supabase } = await requireAdmin();
+  const { error } = await supabase
+    .from("bank_transactions")
+    .update({ status: "excluded" })
+    .eq("id", txnId)
+    .eq("status", "unmatched");
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin/books/banking");
+  return { ok: true };
+}
+
 export async function recordIncome(input: {
   entry_date: string;
   amount_cents: number;
