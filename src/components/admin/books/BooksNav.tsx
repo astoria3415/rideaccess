@@ -11,6 +11,7 @@ const tabs = [
   { href: "/admin/books/banking", label: "Banking" },
   { href: "/admin/books/vendors", label: "Vendors" },
   { href: "/admin/invoices", label: "Invoices" },
+  { href: "/admin/books/reports", label: "Reports" },
   { href: "/admin/books/journal", label: "Journal" },
   { href: "/admin/books/accounts", label: "Chart of Accounts" },
 ];
