@@ -26,13 +26,26 @@ export function Testimonials() {
               ))}
             </div>
             <figcaption className="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4">
-              <Image
-                src={t.image}
-                alt={`${t.name}, Ride Access NYC passenger`}
-                width={56}
-                height={56}
-                className="h-14 w-14 flex-none rounded-full object-cover ring-2 ring-accent/20"
-              />
+              {t.image ? (
+                <Image
+                  src={t.image}
+                  alt={`${t.name}, Ride Access NYC passenger`}
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 flex-none rounded-full object-cover ring-2 ring-accent/20"
+                />
+              ) : (
+                <span
+                  aria-hidden
+                  className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-accent/10 font-semibold text-primary ring-2 ring-accent/20"
+                >
+                  {t.name
+                    .split(" ")
+                    .map((w) => w[0])
+                    .slice(0, 2)
+                    .join("")}
+                </span>
+              )}
               <div>
                 <p className="font-semibold text-primary">{t.name}</p>
                 <p className="text-sm text-slate-500">

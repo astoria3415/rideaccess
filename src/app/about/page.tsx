@@ -79,6 +79,7 @@ export default function AboutPage() {
                 <Image
                   src={photos.about.src}
                   alt={photos.about.alt}
+                  style={{ objectPosition: photos.about.position }}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"

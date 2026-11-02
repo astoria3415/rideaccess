@@ -2,9 +2,12 @@
  * Central photo registry.
  *
  * Every image used across the marketing site is defined here so it can be
- * swapped in one place. These are Ride Access NYC's own photos, stored in
- * /public/photos. To change any image, drop a new file in /public/photos and
- * update the `src` below — the layout, cropping and alt text stay the same.
+ * swapped in one place. These are real Ride Access NYC photos, stored in
+ * /public/photos. Passenger photos are used with the passenger's permission.
+ *
+ * To change any image, drop a new file in /public/photos and update the `src`
+ * below. `position` sets which part of the photo stays visible when a portrait
+ * photo is cropped into a landscape slot (CSS object-position, e.g. "50% 60%").
  */
 
 export type SitePhoto = {
@@ -12,62 +15,74 @@ export type SitePhoto = {
   src: string;
   /** Descriptive alt text for screen readers + SEO. */
   alt: string;
+  /** Focus point when cropped. Defaults to center. */
+  position?: string;
 };
 
 export const photos = {
   /** Large hero image — the first thing visitors see. */
   hero: {
-    src: "/photos/pic1.png",
-    alt: "Ride Access NYC branded wheelchair-accessible van on a New York City street",
+    src: "/photos/george-van-ramp-front.webp",
+    alt: "Ride Access NYC passenger in his wheelchair in front of our accessible minivan with the rear ramp lowered",
+    position: "50% 55%",
   },
 
   /** Compassionate-care band on the homepage. */
   care: {
-    src: "/photos/pic2.png",
-    alt: "Ride Access NYC attendant assisting a wheelchair passenger into an accessible van",
+    src: "/photos/george-secured-inside.webp",
+    alt: "Smiling passenger waving from his wheelchair, secured inside the Ride Access NYC van",
+    position: "50% 45%",
   },
 
   /** About page — "Our Story" image. */
   about: {
-    src: "/photos/pic3.png",
-    alt: "Ride Access NYC attendant helping a senior with a walker down the van ramp",
+    src: "/photos/george-street-stop.webp",
+    alt: "Passenger in his wheelchair beside the Ride Access NYC van on a New York City street",
+    position: "50% 62%",
   },
 
   /** Services pages — banner image at the top of the page body. */
   services: {
-    src: "/photos/pic5.png",
-    alt: "Wheelchair passenger boarding a Ride Access NYC accessible van via the ramp",
+    src: "/photos/george-boarding-ramp.webp",
+    alt: "Wheelchair passenger rolling up the rear ramp into the Ride Access NYC van",
+    position: "50% 38%",
   },
 
   /** Services page — private trips for disabled students. */
   students: [
     {
-      src: "/photos/student1.png",
-      alt: "Ride Access NYC driver assisting a student in a wheelchair into an accessible van in New York City",
+      src: "/photos/van-ramp-deployed.webp",
+      alt: "Ride Access NYC accessible minivan with the rear wheelchair ramp deployed and securement tie-downs inside",
+      position: "50% 60%",
     },
     {
-      src: "/photos/student2.png",
-      alt: "Ride Access NYC branded van with rear ramp deployed as a driver helps a smiling student in a wheelchair board",
+      src: "/photos/george-beside-van.webp",
+      alt: "Wheelchair passenger next to the Ride Access NYC van with the ramp lowered",
+      position: "50% 55%",
     },
   ],
 
   /** Trust gallery — a small grid that humanizes the service. */
   gallery: [
     {
-      src: "/photos/pic4.png",
-      alt: "Wheelchair-accessible transport van with rear ramp deployed for boarding",
+      src: "/photos/van-ramp-deployed.webp",
+      alt: "Rear wheelchair ramp deployed on the Ride Access NYC minivan",
+      position: "50% 65%",
     },
     {
-      src: "/photos/pic7.png",
-      alt: "Caregivers helping an elderly passenger with a walker out of a vehicle",
+      src: "/photos/george-boarding-ramp.webp",
+      alt: "Passenger boarding the van via the rear ramp",
+      position: "50% 60%",
     },
     {
-      src: "/photos/pic2.png",
-      alt: "Attendant securing a wheelchair passenger in a Ride Access NYC van",
+      src: "/photos/george-beside-van.webp",
+      alt: "Passenger beside the accessible van before his trip",
+      position: "50% 55%",
     },
     {
-      src: "/photos/pic3.png",
-      alt: "Senior passenger assisted off the accessible van ramp by a Ride Access NYC attendant",
+      src: "/photos/george-secured-inside.webp",
+      alt: "Passenger secured in his wheelchair inside the van",
+      position: "50% 40%",
     },
   ],
 } satisfies Record<string, SitePhoto | SitePhoto[]>;

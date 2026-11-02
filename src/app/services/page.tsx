@@ -101,6 +101,7 @@ export default function ServicesPage() {
                     <Image
                       src={p.src}
                       alt={p.alt}
+                      style={{ objectPosition: p.position }}
                       fill
                       sizes="(max-width: 768px) 100vw, 25vw"
                       className="object-cover"

@@ -72,6 +72,7 @@ export default async function ServicePage({
               <Image
                 src={photos.services.src}
                 alt={photos.services.alt}
+                style={{ objectPosition: photos.services.position }}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 66vw"

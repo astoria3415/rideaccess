@@ -129,6 +129,7 @@ export default function HomePage() {
                   <Image
                     src={photos.hero.src}
                     alt={photos.hero.alt}
+                    style={{ objectPosition: photos.hero.position }}
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -299,6 +300,7 @@ export default function HomePage() {
                 <Image
                   src={photos.care.src}
                   alt={photos.care.alt}
+                  style={{ objectPosition: photos.care.position }}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
@@ -329,6 +331,7 @@ export default function HomePage() {
                     <Image
                       src={p.src}
                       alt={p.alt}
+                      style={{ objectPosition: p.position }}
                       fill
                       sizes="(max-width: 640px) 50vw, 12vw"
                       className="object-cover"
