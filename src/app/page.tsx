@@ -349,8 +349,8 @@ export default function HomePage() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Testimonials"
-            title="Trusted by Families & Care Teams"
-            description="Real experiences from the passengers and professionals we serve."
+            title="What Our Passengers Say"
+            description="Real words from real Ride Access NYC passengers."
           />
           <div className="mt-14">
             <Testimonials />

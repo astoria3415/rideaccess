@@ -7,7 +7,7 @@ import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Testimonials",
   description:
-    "Read what families, patients, and healthcare professionals say about Ride Access NYC's wheelchair and medical transportation.",
+    "Read what Ride Access NYC passengers say about our wheelchair-accessible transportation in New York City and beyond.",
   path: "/testimonials",
 });
 
@@ -19,7 +19,7 @@ export default function TestimonialsPage() {
       />
       <PageHero
         title="What Our Passengers Say"
-        subtitle="Real experiences from the families and care teams who trust us every day."
+        subtitle="Real words from real Ride Access NYC passengers."
         breadcrumbs={[{ name: "Testimonials", href: "/testimonials" }]}
       />
       <section className="container-page py-16">

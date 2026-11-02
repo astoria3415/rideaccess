@@ -5,7 +5,13 @@ import { Reveal } from "./Reveal";
 
 export function Testimonials() {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div
+      className={
+        testimonials.length === 1
+          ? "mx-auto max-w-2xl"
+          : "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+      }
+    >
       {testimonials.map((t, i) => (
         <Reveal key={t.name} delay={i * 0.05}>
           <figure className="card flex h-full flex-col">
