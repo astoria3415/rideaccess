@@ -16,7 +16,7 @@ export const site = {
     "Hello Ride Access NYC. I would like a transportation quote.",
   email: "contact@rideaccessnyc.com",
   /** Zelle email or phone. Leave empty to hide the Zelle option. */
-  zelle: "",
+  zelle: "(929) 206-3210",
   ogImage: "/og-image.png",
   serviceAreas: [
     "Manhattan",
