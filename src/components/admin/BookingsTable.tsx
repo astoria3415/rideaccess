@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { BookingStatusSelect } from "@/components/admin/BookingStatusSelect";
 import { SendPaymentRequest } from "@/components/admin/SendPaymentRequest";
+import { AddExtraCharge } from "@/components/admin/AddExtraCharge";
 import { EditBookingDialog } from "@/components/admin/EditBookingDialog";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 
@@ -152,11 +153,13 @@ export function BookingsTable({ bookings }: { bookings: Booking[] }) {
                   </td>
                   <td className="p-4">
                     <StatusBadge status={b.payment_status} />
-                    {b.payment_status !== "paid" && (
-                      <div className="mt-2">
+                    <div className="mt-2">
+                      {b.payment_status !== "paid" ? (
                         <SendPaymentRequest bookingId={b.id} />
-                      </div>
-                    )}
+                      ) : (
+                        <AddExtraCharge bookingId={b.id} />
+                      )}
+                    </div>
                   </td>
                   <td className="p-4">
                     <BookingStatusSelect id={b.id} current={b.booking_status} />

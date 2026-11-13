@@ -13,6 +13,7 @@ import {
 } from "@/lib/pricing";
 import { AddressAutocomplete } from "./AddressAutocomplete";
 import { estimateTrip } from "@/lib/geo";
+import { site } from "@/lib/site";
 
 const usd = (n: number) => `$${n.toFixed(2)}`;
 
@@ -21,8 +22,9 @@ export function PaymentForm() {
   const bookingId = params.get("booking");
   const ref = params.get("ref");
   const [email, setEmail] = useState(params.get("email") ?? "");
+  const isExtra = params.get("kind") === "extra";
   const [description, setDescription] = useState(
-    ref ? `Booking ${ref}` : "Transportation payment",
+    params.get("desc") ?? (ref ? `Booking ${ref}` : "Transportation payment"),
   );
   const quoted = params.get("amount");
   const [airport, setAirport] = useState<AirportCode | "">("");
@@ -107,6 +109,7 @@ export function PaymentForm() {
           description,
           email,
           bookingId: bookingId ?? undefined,
+          kind: isExtra ? "extra" : "fare",
         }),
       });
       const data = await res.json();
@@ -143,6 +146,7 @@ export function PaymentForm() {
         />
       </div>
 
+      {!isExtra && (
       <div>
         <label className="label">Trip fare</label>
         <div className="mb-3 space-y-3">
@@ -362,8 +366,14 @@ export function PaymentForm() {
           per step. Tolls are added at cost; waiting time beyond the free minutes is charged by the minute.
         </p>
 
-        <div className="mt-4">
-          <label className="label">Or enter a custom / quoted amount (USD)</label>
+      </div>
+      )}
+
+      <div>
+        <div className={isExtra ? "" : "mt-4"}>
+          <label className="label">
+            {isExtra ? "Amount due (USD)" : "Or enter a custom / quoted amount (USD)"}
+          </label>
           <input
             type="number"
             min="5"
@@ -375,6 +385,23 @@ export function PaymentForm() {
           />
         </div>
       </div>
+
+      {site.zelle && (() => {
+        const due = custom ? parseFloat(custom) || 0 : amount / 100;
+        if (!due) return null;
+        const z = Math.round(due * (1 - RATES.zelleDiscount) * 100) / 100;
+        return (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+            <p className="font-semibold">
+              Save {Math.round(RATES.zelleDiscount * 100)}% with Zelle: pay {usd(z)}
+            </p>
+            <p className="mt-1">
+              Send {usd(z)} by Zelle to <strong>{site.zelle}</strong> and put
+              &quot;{description}&quot; in the memo. Card price: {usd(due)}.
+            </p>
+          </div>
+        );
+      })()}
 
       {error && (
         <p className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">

@@ -5,17 +5,19 @@
  */
 export const RATES = {
   /** Flat starting fare. Also the minimum fare for a one-way ride. */
-  baseFare: 55,
+  baseFare: 57,
   /** Miles covered by the base fare. */
   includedMiles: 3,
   /** Charge per mile after the included miles. */
-  perMile: 3.5,
+  perMile: 3.6,
   /** Stair assistance, charged per step at each stop that needs it. */
   perStep: 2,
   /** Waiting time included at no charge, per trip. */
   freeWaitMinutes: 15,
   /** Charge per minute of waiting after the free minutes. */
   perWaitMinute: 0.75,
+  /** Discount for paying by Zelle instead of card (0.03 = 3%). */
+  zelleDiscount: 0.03,
 };
 
 export type AirportCode = "LGA" | "JFK" | "EWR";
@@ -35,19 +37,19 @@ export const PICKUP_AREAS: Record<
 > = {
   bronx_manhattan: {
     label: "Bronx / Manhattan (3rd Ave & 145th St)",
-    fares: { LGA: 95, JFK: 140, EWR: 150 },
+    fares: { LGA: 98, JFK: 145, EWR: 155 },
   },
   queens: {
     label: "Queens (Kew Gardens)",
-    fares: { LGA: 95, JFK: 140, EWR: 250 },
+    fares: { LGA: 98, JFK: 145, EWR: 259 },
   },
   staten_island: {
     label: "Staten Island",
-    fares: { LGA: 200, JFK: 250, EWR: 160 },
+    fares: { LGA: 207, JFK: 259, EWR: 166 },
   },
   other: {
     label: "Anywhere else",
-    fares: { LGA: 140, JFK: 200, EWR: 250 },
+    fares: { LGA: 145, JFK: 207, EWR: 259 },
   },
 };
 

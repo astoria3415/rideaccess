@@ -49,6 +49,7 @@ export const checkoutSchema = z.object({
   description: z.string().min(2),
   email: z.string().email(),
   bookingId: z.string().uuid().optional(),
+  kind: z.enum(["fare", "extra"]).optional(),
 });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;

@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature");
   // Updated variable name to match standard Netlify configurations
-  const secret = process.env.STRIPE_WEBHOOK_SECRET; 
+  const secret = process.env.STRIPE_WEBHOOK_SECRET ?? process.env.WEBHOOK_SECRET;
 
   // Added console.error logs so guard clauses don't exit silently
   if (!sig) {
@@ -85,7 +85,19 @@ export async function POST(req: Request) {
         console.error("[webhook error] Failed to insert payment:", paymentErr);
       }
 
-      if (bookingId) {
+      const isExtra = session.metadata?.kind === "extra";
+      if (bookingId && isExtra) {
+        // Extra charge (tolls, waiting time): add to the booking total.
+        const { data: b } = await supabase
+          .from("bookings")
+          .select("amount_cents")
+          .eq("id", bookingId)
+          .single();
+        await supabase
+          .from("bookings")
+          .update({ amount_cents: (b?.amount_cents ?? 0) + amount })
+          .eq("id", bookingId);
+      } else if (bookingId) {
         await supabase
           .from("bookings")
           .update({
