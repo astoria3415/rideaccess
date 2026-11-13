@@ -22,6 +22,16 @@ interface Point {
   lng: number;
 }
 
+/** Google returns either LatLng (lat()) or plain numbers (lat); accept both. */
+function toPoint(loc: any): Point {
+  const lat = typeof loc.lat === "function" ? loc.lat() : loc.lat;
+  const lng = typeof loc.lng === "function" ? loc.lng() : loc.lng;
+  if (typeof lat !== "number" || typeof lng !== "number") {
+    throw new Error("Invalid location");
+  }
+  return { lat, lng };
+}
+
 function haversineMiles(a: Point, b: Point): number {
   const R = 3958.8;
   const toRad = (d: number) => (d * Math.PI) / 180;
@@ -80,8 +90,8 @@ export async function estimateTrip(
     throw new Error("No route found");
   }
 
-  const from: Point = { lat: start.lat(), lng: start.lng() };
-  const to: Point = { lat: end.lat(), lng: end.lng() };
+  const from = toPoint(start);
+  const to = toPoint(end);
   const miles = Math.round((route.distanceMeters / 1609.344) * 10) / 10;
 
   const dropAirport = airportAt(to);
