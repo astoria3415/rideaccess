@@ -19,7 +19,7 @@ HOURS: ${site.hours}
 SERVICE AREAS: ${serviceAreas.map((a) => a.name).join(", ")}.
 SERVICES:
 ${services.map((s) => `- ${s.title}: ${s.short}`).join("\n")}
-PAYMENT: Secure online payment via card, Apple Pay, Google Pay, and Link by Stripe. Private-pay provider; receipts can be submitted to insurance/Medicaid/FSA for possible reimbursement.
+PAYMENT: Secure online payment via card, Apple Pay, Google Pay, and Link by Stripe. Private-pay provider only. We do NOT accept Medicaid and do not bill insurance at this time; never suggest Medicaid can pay or reimburse. Detailed receipts are provided, which customers may submit to an FSA/HSA or private insurance.
 FAQ:
 ${faqs.map((f) => `Q: ${f.question}\nA: ${f.answer}`).join("\n")}
 `.trim();

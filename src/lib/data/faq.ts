@@ -17,7 +17,7 @@ export const faqs: FAQItem[] = [
   {
     question: "Do you accept insurance or Medicaid?",
     answer:
-      "Ride Access NYC is a private-pay transportation provider. We can provide detailed receipts and documentation that many passengers submit to their insurance, Medicaid plan, or flexible spending account for potential reimbursement. Contact us and we'll explain your options.",
+      "We do not accept Medicaid or bill insurance at this time. Ride Access NYC is a private-pay service: you pay us directly by card, Apple Pay, or Google Pay. We provide a detailed receipt with every ride, which you can submit to your FSA or HSA, or to a private insurance plan that covers transportation.",
   },
   {
     question: "How far in advance should I book?",
