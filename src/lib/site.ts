@@ -4,7 +4,7 @@
  */
 export const site = {
   name: "Ride Access NYC",
-  legalName: "Ride Access NYC LLC",
+  legalName: "RideAccessNYC Inc.",
   shortName: "Ride Access NYC",
   description:
     "Premium private wheelchair and non-emergency medical transportation across New York City. Safe, reliable, professional door-to-door rides for medical appointments, hospital discharges, dialysis treatments and everyday travel.",

@@ -59,7 +59,8 @@ export function buildMetadata({
 export function localBusinessJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@type": ["MedicalBusiness", "LocalBusiness", "MovingCompany"],
+    "@type": ["MedicalBusiness", "LocalBusiness"],
+    additionalType: "https://en.wikipedia.org/wiki/Non-emergency_medical_transportation",
     name: site.name,
     legalName: site.legalName,
     url: site.url,
