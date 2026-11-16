@@ -20,11 +20,12 @@ export function BookingForm() {
     watch,
   } = useForm<BookingInput>({
     resolver: zodResolver(bookingSchema),
-    defaultValues: { wheelchairRequired: false, roundTrip: false },
+    defaultValues: { wheelchairRequired: false, roundTrip: false, hasStairs: false },
   });
 
   const pickupAddress = watch("pickupAddress");
   const destinationAddress = watch("destinationAddress");
+  const hasStairs = watch("hasStairs");
 
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [serverError, setServerError] = useState("");
@@ -181,7 +182,24 @@ export function BookingForm() {
           <input type="checkbox" className="h-5 w-5 rounded border-slate-300 text-primary focus:ring-secondary" {...register("roundTrip")} />
           Round Trip
         </label>
+        <label className="flex items-center gap-2 text-sm font-medium text-ink">
+          <input type="checkbox" className="h-5 w-5 rounded border-slate-300 text-primary focus:ring-secondary" {...register("hasStairs")} />
+          Stairs at pickup or drop-off
+        </label>
       </div>
+
+      {hasStairs && (
+        <Field label="How many steps?" error={errors.stairSteps?.message}>
+          <input
+            className="field"
+            type="number"
+            min="1"
+            inputMode="numeric"
+            placeholder="e.g. 12"
+            {...register("stairSteps")}
+          />
+        </Field>
+      )}
 
       <Field label="Additional Notes" error={errors.notes?.message}>
         <textarea

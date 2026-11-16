@@ -7,7 +7,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Make a Payment",
   description:
-    "Securely pay for your ride, deposit, custom quote, or invoice with Ride Access NYC. Cards, Apple Pay, and Google Pay accepted.",
+    "Securely pay for your ride, deposit, custom quote, or invoice with Ride Access NYC. Cards, Apple Pay, Google Pay, and Link accepted.",
   path: "/payment",
 });
 
@@ -26,7 +26,7 @@ export default function PaymentPage() {
         <aside className="space-y-4">
           {[
             { icon: ShieldCheck, t: "PCI-compliant", d: "Card data never touches our servers." },
-            { icon: CreditCard, t: "Multiple methods", d: "Card, Apple Pay & Google Pay." },
+            { icon: CreditCard, t: "Multiple methods", d: "Card, Apple Pay, Google Pay & Link." },
             { icon: Receipt, t: "Instant receipt", d: "Emailed automatically on success." },
           ].map((i) => (
             <div key={i.t} className="card">

@@ -65,7 +65,15 @@ export async function POST(req: Request) {
     service_type: data.serviceType,
     wheelchair_required: data.wheelchairRequired,
     round_trip: data.roundTrip,
-    notes: data.notes || null,
+    notes:
+      [
+        data.hasStairs
+          ? `STAIRS: yes${data.stairSteps ? ` — ${data.stairSteps} steps` : ""}`
+          : null,
+        data.notes || null,
+      ]
+        .filter(Boolean)
+        .join("\n") || null,
     booking_status: "pending",
     payment_status: "unpaid",
     amount_cents: 0,

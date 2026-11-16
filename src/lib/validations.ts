@@ -13,6 +13,8 @@ export const bookingSchema = z.object({
   serviceType: z.string().min(1, "Please select a service type."),
   wheelchairRequired: z.boolean().default(false),
   roundTrip: z.boolean().default(false),
+  hasStairs: z.boolean().default(false),
+  stairSteps: z.coerce.number().int().min(0).max(500).optional(),
   notes: z.string().max(1000).optional().or(z.literal("")),
   // Honeypot — must stay empty.
   company: z.string().max(0).optional(),
@@ -49,7 +51,6 @@ export const checkoutSchema = z.object({
   description: z.string().min(2),
   email: z.string().email(),
   bookingId: z.string().uuid().optional(),
-  kind: z.enum(["fare", "extra"]).optional(),
 });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;

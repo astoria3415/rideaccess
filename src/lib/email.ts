@@ -194,7 +194,7 @@ export async function sendPaymentRequest(data: {
     <p>Hi ${data.passengerName}, here is the quote for your ride
     <strong>${data.bookingNumber}</strong>:</p>
     <p style="font-size:28px;font-weight:700;color:#0F4C81;margin:16px 0">${amount}</p>
-    <p>You can pay securely online with card, Apple Pay or Google Pay:</p>
+    <p>You can pay securely online with card, Apple Pay, Google Pay or Link:</p>
     <div style="text-align:center;margin:24px 0 8px">
       <a href="${payUrl}" style="display:inline-block;background:#0F4C81;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:10px">Pay ${amount} Now</a>
       <p style="color:#64748b;font-size:13px;margin:14px 0 6px">Or scan to pay from your phone:</p>
@@ -215,51 +215,6 @@ export async function sendPaymentRequest(data: {
     return { sent: true };
   } catch (err) {
     console.error("[email] payment request failed", err);
-    return { sent: false, error: err instanceof Error ? err.message : "Send failed." };
-  }
-}
-
-export async function sendExtraChargeRequest(data: {
-  passengerName: string;
-  email: string;
-  bookingId: string;
-  bookingNumber: string;
-  amountCents: number;
-  reason: string;
-}): Promise<{ sent: boolean; error?: string }> {
-  const resend = getResend();
-  if (!resend)
-    return { sent: false, error: "Email is not configured (RESEND_API_KEY missing)." };
-
-  const amount = money(data.amountCents);
-  const desc = `${data.reason} for booking ${data.bookingNumber}`;
-  const payUrl = `${site.url}/payment?booking=${data.bookingId}&ref=${encodeURIComponent(data.bookingNumber)}&email=${encodeURIComponent(data.email)}&amount=${(data.amountCents / 100).toFixed(2)}&kind=extra&desc=${encodeURIComponent(desc)}`;
-  const qrUrl = `${site.url}/api/qr?data=${encodeURIComponent(payUrl)}`;
-
-  const body = `
-    <p>Hi ${data.passengerName}, thank you for riding with us. Your trip
-    <strong>${data.bookingNumber}</strong> had an additional charge:</p>
-    <p style="margin:12px 0"><strong>${data.reason}:</strong></p>
-    <p style="font-size:28px;font-weight:700;color:#0F4C81;margin:8px 0 16px">${amount}</p>
-    <div style="text-align:center;margin:24px 0 8px">
-      <a href="${payUrl}" style="display:inline-block;background:#0F4C81;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:10px">Pay ${amount}</a>
-      <p style="color:#64748b;font-size:13px;margin:14px 0 6px">Or scan to pay from your phone:</p>
-      <img src="${qrUrl}" alt="QR code to pay ${amount}" width="150" height="150" style="border:1px solid #e2e8f0;border-radius:10px"/>
-    </div>
-    <p>Questions? Call us at <strong>${site.phone}</strong>.</p>`;
-
-  try {
-    const { error } = await resend.emails.send({
-      from: FROM,
-      to: data.email,
-      replyTo: ADMIN,
-      subject: `${data.reason} for booking ${data.bookingNumber} — ${amount}`,
-      html: wrap("Additional Charge", body),
-    });
-    if (error) return { sent: false, error: error.message };
-    return { sent: true };
-  } catch (err) {
-    console.error("[email] extra charge failed", err);
     return { sent: false, error: err instanceof Error ? err.message : "Send failed." };
   }
 }

@@ -36,7 +36,7 @@ let mapsBootstrapped = false;
  * a manual <script> tag whose onload can fire before importLibrary exists.
  * See: https://developers.google.com/maps/documentation/javascript/load-maps-js-api
  */
-export function loadMaps(apiKey: string): void {
+function loadMaps(apiKey: string): void {
   const w = window as any;
   if (mapsBootstrapped || w.google?.maps?.importLibrary) {
     mapsBootstrapped = true;

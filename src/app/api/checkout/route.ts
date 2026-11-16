@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { amount, description, email, bookingId, kind } = parsed.data;
+  const { amount, description, email, bookingId } = parsed.data;
   const origin =
     req.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? site.url;
 
@@ -54,8 +54,7 @@ export async function POST(req: Request) {
       ],
       metadata: { 
         bookingId: bookingId ?? "", 
-        description: description ?? "",
-        kind: kind ?? "fare",
+        description: description ?? "" 
       },
       automatic_tax: { enabled: false },
       success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
