@@ -15,7 +15,7 @@ export const serviceAreas: ServiceArea[] = [
     region: "New York City",
     blurb: "Accessible medical transportation across all of Manhattan.",
     intro:
-      "From the Financial District to Washington Heights, Ride Access NYC provides dependable wheelchair and ambulatory transportation throughout Manhattan. We navigate busy midtown traffic so your loved ones arrive calm and on time.",
+      "From the Financial District to Washington Heights, Ride Access NYC provides dependable wheelchair transportation throughout Manhattan. We navigate busy midtown traffic so your loved ones arrive calm and on time.",
     landmarks: [
       "NYU Langone Health",
       "Mount Sinai Hospital",
@@ -108,7 +108,7 @@ export const serviceAreas: ServiceArea[] = [
     region: "New York Metro",
     blurb: "Reliable accessible rides throughout Westchester County.",
     intro:
-      "Ride Access NYC serves Westchester County with dependable wheelchair and ambulatory transportation — connecting residents to local hospitals and into New York City for specialized care.",
+      "Ride Access NYC serves Westchester County with dependable wheelchair transportation — connecting residents to local hospitals and into New York City for specialized care.",
     landmarks: [
       "White Plains Hospital",
       "Westchester Medical Center",

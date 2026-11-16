@@ -6,7 +6,6 @@ import {
   Plane,
   Route,
   Stethoscope,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -38,22 +37,25 @@ export const services: Service[] = [
     ],
     hasPage: true,
   },
-  {
-    slug: "ambulatory-transportation",
-    title: "Ambulatory Transportation",
-    short:
-      "Comfortable assisted rides for passengers who can walk with support.",
-    description:
-      "For passengers who do not require a wheelchair but still benefit from a steady hand. Our drivers provide curb-to-curb and door-to-door assistance in clean, comfortable sedans and vans.",
-    icon: Users,
-    features: [
-      "Assisted entry and exit",
-      "Comfortable, sanitized vehicles",
-      "Companion seating available",
-      "Flexible scheduling",
-    ],
-    hasPage: false,
-  },
+  // Ambulatory Transportation is hidden until vehicles are available.
+  // To bring it back, remove the "//" from the lines below and add
+  // `Users` back to the lucide-react import at the top of this file.
+  // {
+  //   slug: "ambulatory-transportation",
+  //   title: "Ambulatory Transportation",
+  //   short:
+  //     "Comfortable assisted rides for passengers who can walk with support.",
+  //   description:
+  //     "For passengers who do not require a wheelchair but still benefit from a steady hand. Our drivers provide curb-to-curb and door-to-door assistance in clean, comfortable sedans and vans.",
+  //   icon: Users,
+  //   features: [
+  //     "Assisted entry and exit",
+  //     "Comfortable, sanitized vehicles",
+  //     "Companion seating available",
+  //     "Flexible scheduling",
+  //   ],
+  //   hasPage: false,
+  // },
   {
     slug: "hospital-discharge-transportation",
     title: "Hospital Discharge Transportation",
