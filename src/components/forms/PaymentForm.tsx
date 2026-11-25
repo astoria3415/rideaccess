@@ -1,14 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Loader2, Lock, AlertCircle } from "lucide-react";
-
-const PRESETS = [
-  { label: "Booking Deposit", amount: 5000 },
-  { label: "Standard Ride", amount: 6500 },
-  { label: "Round Trip", amount: 12000 },
-];
 
 export function PaymentForm() {
   const params = useSearchParams();
@@ -19,7 +14,6 @@ export function PaymentForm() {
     ref ? `Booking ${ref}` : "Transportation payment",
   );
   const quoted = params.get("amount");
-  const [amount, setAmount] = useState(6500);
   const [custom, setCustom] = useState(
     quoted && !isNaN(parseFloat(quoted)) ? parseFloat(quoted).toFixed(2) : "",
   );
@@ -30,9 +24,7 @@ export function PaymentForm() {
     e.preventDefault();
     setError("");
 
-    const cents = custom
-      ? Math.round(parseFloat(custom) * 100)
-      : amount;
+    const cents = custom ? Math.round(parseFloat(custom) * 100) : 0;
 
     if (!email || !cents || cents < 500) {
       setError("Please enter a valid email and an amount of at least $5.00.");
@@ -87,34 +79,24 @@ export function PaymentForm() {
 
       <div>
         <label className="label">Amount</label>
-        <div className="grid grid-cols-3 gap-2">
-          {PRESETS.map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              onClick={() => {
-                setAmount(p.amount);
-                setCustom("");
-              }}
-              className={`rounded-xl border px-3 py-3 text-sm font-medium transition ${
-                amount === p.amount && !custom
-                  ? "border-primary bg-primary-50 text-primary"
-                  : "border-slate-200 text-slate-600 hover:border-secondary"
-              }`}
-            >
-              {p.label}
-              <span className="mt-1 block font-heading text-base font-bold text-primary">
-                ${(p.amount / 100).toFixed(0)}
-              </span>
-            </button>
-          ))}
+        <div className="rounded-xl border border-slate-200 px-4 py-4 text-center">
+          <p className="text-sm text-slate-600">
+            Prices depend on your trip. Don&apos;t have a quote yet?
+          </p>
+          <Link
+            href="/book"
+            className="mt-2 inline-block font-heading text-base font-bold text-primary hover:underline"
+          >
+            Request a Quote
+          </Link>
         </div>
         <div className="mt-3">
-          <label className="label">Or enter a custom amount (USD)</label>
+          <label className="label">Enter your quoted amount (USD) *</label>
           <input
             type="number"
             min="5"
             step="0.01"
+            required
             placeholder="e.g. 85.00"
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
