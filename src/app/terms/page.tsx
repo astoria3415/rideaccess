@@ -14,7 +14,7 @@ export default function TermsPage() {
     <>
       <PageHero
         title="Terms of Service"
-        subtitle="Last updated June 2026"
+        subtitle="Last updated November 2026"
         breadcrumbs={[{ name: "Terms of Service", href: "/terms" }]}
       />
       <div className="container-page max-w-3xl py-16">
@@ -41,9 +41,19 @@ export default function TermsPage() {
 
         <LegalSection heading="Payments">
           <p>
-            Fares are quoted based on service type, distance, and scheduling.
-            Payment is processed securely through Stripe. Deposits or prepayment
-            may be required for certain bookings.
+            Every trip is quoted individually based on service type, distance,
+            stairs, and scheduling. We confirm your price by phone before your
+            ride, and payment is due only after you accept the quote. Payment is
+            processed securely through Stripe. Deposits or prepayment may be
+            required for certain bookings.
+          </p>
+        </LegalSection>
+
+        <LegalSection heading="Waiting Time">
+          <p>
+            The first 30 minutes of waiting at a hospital, appointment, or other
+            stop are free. After 30 minutes, waiting time is charged at $30 per
+            hour.
           </p>
         </LegalSection>
 

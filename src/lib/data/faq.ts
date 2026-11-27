@@ -42,7 +42,12 @@ export const faqs: FAQItem[] = [
   {
     question: "How do I pay for my ride?",
     answer:
-      "We accept secure online payments by credit card, debit card, Apple Pay, Google Pay, and Link by Stripe. You can pay when booking online, settle a custom quote, or pay an invoice — all through our encrypted checkout. Email receipts are sent automatically.",
+      "Every trip is priced individually. After you request a quote, we call or text you with your price, and you pay only after you accept it. We accept credit card, debit card, Apple Pay, Google Pay, and Link by Stripe through our encrypted checkout. Email receipts are sent automatically.",
+  },
+  {
+    question: "Do you charge for waiting time?",
+    answer:
+      "The first 30 minutes of waiting at the hospital or appointment are free. After 30 minutes, waiting time is $30 per hour. If you expect a long visit, let us know when you request your quote and we'll include it in your price.",
   },
   {
     question: "What if I need to cancel or change my ride?",
