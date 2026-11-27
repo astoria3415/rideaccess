@@ -9,7 +9,17 @@ export const metadata = buildMetadata({
   path: "/payment/cancelled",
 });
 
-export default function PaymentCancelledPage() {
+export default async function PaymentCancelledPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ booking?: string }>;
+}) {
+  const { booking } = await searchParams;
+  const isUuid =
+    !!booking &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(booking);
+  const retryHref = isUuid ? `/payment?booking=${booking}` : "/payment";
+
   return (
     <section className="container-page flex min-h-[60vh] flex-col items-center justify-center py-24 text-center">
       <span className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 text-amber-600">
@@ -21,7 +31,7 @@ export default function PaymentCancelledPage() {
         completing your payment.
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <Link href="/payment" className="btn-primary">
+        <Link href={retryHref} className="btn-primary">
           <CreditCard className="h-5 w-5" aria-hidden /> Try Again
         </Link>
         <a href={`tel:${site.phoneRaw}`} className="btn-outline">

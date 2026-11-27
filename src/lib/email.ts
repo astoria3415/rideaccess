@@ -133,14 +133,13 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
     ${detailsTable}
     <p style="color:#64748b">Reply-to reaches the passenger at ${data.email}.</p>`;
 
-  const payUrl = `${site.url}/payment?booking=${data.bookingId}&ref=${encodeURIComponent(data.bookingNumber)}&email=${encodeURIComponent(data.email)}`;
-  const qrUrl = `${site.url}/api/qr?data=${encodeURIComponent(payUrl)}`;
-
+  // No pay link here: the customer pays only after we quote the trip,
+  // using the link in the separate quote email.
   const customerExtras = `
-    <div style="text-align:center;margin:24px 0 8px">
-      <a href="${payUrl}" style="display:inline-block;background:#0F4C81;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 28px;border-radius:10px">Pay Securely Online</a>
-      <p style="color:#64748b;font-size:13px;margin:14px 0 6px">Or scan to pay from your phone:</p>
-      <img src="${qrUrl}" alt="QR code for booking ${data.bookingNumber} payment page" width="150" height="150" style="border:1px solid #e2e8f0;border-radius:10px"/>
+    <div style="margin:24px 0 8px;padding:16px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc">
+      <p style="margin:0;font-weight:600">What happens next</p>
+      <p style="margin:6px 0 0;color:#475569">We'll call or text you with the price for your trip.
+      Once you accept, we'll email you a secure payment link. No payment is needed until then.</p>
     </div>`;
 
   try {
@@ -187,7 +186,8 @@ export async function sendPaymentRequest(data: {
     return { sent: false, error: "Email is not configured (RESEND_API_KEY missing)." };
 
   const amount = money(data.amountCents);
-  const payUrl = `${site.url}/payment?booking=${data.bookingId}&ref=${encodeURIComponent(data.bookingNumber)}&email=${encodeURIComponent(data.email)}&amount=${(data.amountCents / 100).toFixed(2)}`;
+  // The amount is not in the link; the payment page loads the saved quote.
+  const payUrl = `${site.url}/payment?booking=${data.bookingId}&email=${encodeURIComponent(data.email)}`;
   const qrUrl = `${site.url}/api/qr?data=${encodeURIComponent(payUrl)}`;
 
   const body = `
@@ -281,7 +281,11 @@ export async function sendInvoiceEmail(
       <tr><td colspan="2" style="padding:8px 0;color:#64748b">Total Due</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#0F4C81">${money(invoice.total_cents)}</td></tr>
     </table>
     ${invoice.notes ? `<p style="color:#64748b;font-size:13px">${invoice.notes}</p>` : ""}
-    <p>You can pay securely online at <a href="${site.url}/payment">${site.url}/payment</a>.</p>`;
+    ${
+      invoice.booking_id
+        ? `<p>You can pay securely online at <a href="${site.url}/payment?booking=${invoice.booking_id}">${site.url}/payment</a>.</p>`
+        : `<p>To pay, please call us at <strong>${site.phone}</strong>.</p>`
+    }`;
 
   try {
     const { error } = await resend.emails.send({

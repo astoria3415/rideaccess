@@ -3,6 +3,10 @@ import { getStripe } from "@/lib/stripe";
 import { checkoutSchema } from "@/lib/validations";
 import { site } from "@/lib/site";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { getBookingQuote } from "@/lib/booking-quote";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
@@ -25,7 +29,30 @@ export async function POST(req: Request) {
     );
   }
 
-  const { amount, description, email, bookingId } = parsed.data;
+  const quote = await getBookingQuote(parsed.data.bookingId);
+  if (quote.state === "not_found") {
+    return NextResponse.json({ error: "Booking not found." }, { status: 404 });
+  }
+  if (quote.state === "paid") {
+    return NextResponse.json(
+      { error: "This booking has already been paid." },
+      { status: 409 },
+    );
+  }
+  if (quote.state === "no_quote") {
+    return NextResponse.json(
+      {
+        error: `Your quote isn't ready yet. We'll call or text you with your price. Questions? Call ${site.phone}.`,
+      },
+      { status: 409 },
+    );
+  }
+
+  // Amount always comes from the saved quote, never from the request.
+  const amount = quote.amountCents;
+  const bookingId = quote.bookingId;
+  const description = `Booking ${quote.bookingNumber}`;
+  const email = parsed.data.email ?? quote.email;
   const origin =
     req.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? site.url;
 
@@ -52,13 +79,13 @@ export async function POST(req: Request) {
           },
         },
       ],
-      metadata: { 
-        bookingId: bookingId ?? "", 
-        description: description ?? "" 
+      metadata: {
+        bookingId,
+        description,
       },
       automatic_tax: { enabled: false },
       success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/payment/cancelled`,
+      cancel_url: `${origin}/payment/cancelled?booking=${bookingId}`,
     });
 
     return NextResponse.json({ url: session.url });

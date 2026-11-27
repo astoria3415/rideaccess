@@ -46,11 +46,11 @@ export const quoteSchema = z.object({
 
 export type QuoteInput = z.infer<typeof quoteSchema>;
 
+// The amount is NOT accepted from the browser: checkout charges the quote
+// saved on the booking by an admin.
 export const checkoutSchema = z.object({
-  amount: z.number().int().min(500, "Minimum payment is $5.00."),
-  description: z.string().min(2),
-  email: z.string().email(),
-  bookingId: z.string().uuid().optional(),
+  bookingId: z.string().uuid({ message: "Please use the payment link from your quote." }),
+  email: z.string().email().optional(),
 });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;

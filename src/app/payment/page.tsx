@@ -7,7 +7,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Make a Payment",
   description:
-    "Securely pay for your ride, deposit, custom quote, or invoice with Ride Access NYC. Cards, Apple Pay, Google Pay, and Link accepted.",
+    "Securely pay the quote for your Ride Access NYC trip. Cards, Apple Pay, and Google Pay accepted.",
   path: "/payment",
 });
 
@@ -16,7 +16,7 @@ export default function PaymentPage() {
     <>
       <PageHero
         title="Make a Secure Payment"
-        subtitle="Pay for a ride, deposit, custom quote, or invoice. All payments are encrypted and processed by Stripe."
+        subtitle="Pay the quote we confirmed with you for your trip. All payments are encrypted and processed by Stripe."
         breadcrumbs={[{ name: "Payment", href: "/payment" }]}
       />
       <section className="container-page grid gap-10 py-16 lg:grid-cols-[1fr_20rem]">
