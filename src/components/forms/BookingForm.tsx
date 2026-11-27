@@ -209,6 +209,17 @@ export function BookingForm() {
         />
       </Field>
 
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+        <p className="font-semibold text-ink">
+          Waiting time at the hospital or appointment
+        </p>
+        <p className="mt-1">
+          The first 30 minutes are free. After 30 minutes, waiting time is
+          $30 per hour. We&apos;ll confirm your price with you by phone before
+          your ride.
+        </p>
+      </div>
+
       {status === "error" && (
         <p className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
           <AlertCircle className="h-5 w-5" aria-hidden /> {serverError}
@@ -221,7 +232,7 @@ export function BookingForm() {
             <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> Submitting…
           </>
         ) : (
-          "Request My Ride"
+          "Request My Quote"
         )}
       </button>
       <p className="text-center text-xs text-slate-500">

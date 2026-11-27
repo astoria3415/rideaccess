@@ -28,6 +28,7 @@ import { FaqAccordion } from "@/components/FaqAccordion";
 import { CTABanner } from "@/components/CTABanner";
 import { GoogleMap } from "@/components/GoogleMap";
 import { JsonLd } from "@/components/JsonLd";
+import { MobilityBadge } from "@/components/MobilityBadge";
 import { faqJsonLd } from "@/lib/seo";
 
 const trustItems = [
@@ -85,10 +86,13 @@ export default function HomePage() {
         <div className="container-page grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
           <Reveal>
             <div>
-              <span className="eyebrow">
-                <Star className="h-4 w-4 fill-current" aria-hidden /> Trusted NYC
-                Medical Transportation
-              </span>
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="eyebrow">
+                  <Star className="h-4 w-4 fill-current" aria-hidden /> Trusted NYC
+                  Medical Transportation
+                </span>
+                <MobilityBadge />
+              </div>
               <h1 className="mt-5 text-4xl font-bold leading-tight text-primary sm:text-5xl lg:text-6xl">
                 Private Wheelchair Transportation Across New York City
               </h1>

@@ -6,6 +6,7 @@ import { Menu, Phone, X, ChevronDown, Accessibility } from "lucide-react";
 import { site } from "@/lib/site";
 import { services } from "@/lib/data/services";
 import { cn } from "@/lib/utils";
+import { MobilityBadge } from "@/components/MobilityBadge";
 
 const nav = [
   { label: "Home", href: "/" },
@@ -35,6 +36,9 @@ export function Header() {
             </span>
           </span>
         </Link>
+
+        {/* Hidden at lg only, where the full nav + buttons need the room */}
+        <MobilityBadge className="hidden sm:inline-flex lg:hidden xl:inline-flex" />
 
         {/* Desktop nav */}
         <nav
